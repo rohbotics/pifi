@@ -1,3 +1,7 @@
+# Wait a bit before starting
+import time
+time.sleep(5)
+
 import NetworkManager
 
 import uuid
@@ -20,6 +24,9 @@ for device in NetworkManager.NetworkManager.GetDevices():
 if (ApModeDevice == NetworkManager.Device):
     print "ERROR: Network Manager reports no AP mode support on any managed device"
     exit(2)
+
+# Allow 30 seconds for network manager to sort itself out
+time.sleep(30)
 
 if (ApModeDevice.State == 100):
     print("Device currently connected to: %s" 
