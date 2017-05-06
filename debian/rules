@@ -1,0 +1,8 @@
+#! /usr/bin/make -f
+
+#export DH_VERBOSE=1
+export PYBUILD_NAME=pifi
+#export PYBUILD_INSTALL_ARGS='--install-lib=/usr/share/pifi/ --install-scripts=/usr/share/pifi/'
+
+%:
+	dh $@ --with python2 --buildsystem=pybuild

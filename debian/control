@@ -1,0 +1,11 @@
+Source: pifi
+Maintainer: Rohan Agrawal <send2arohan@gmail.comi>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9), dh-python, python-all, python-setuptools
+
+Package: pifi
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Raspberry Pi Wifi Tools
