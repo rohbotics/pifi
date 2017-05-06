@@ -10,13 +10,13 @@ setup(
     author_email='send2arohan@gmail.com',
     license='BSD',
 
-    py_modules=["ap_startup"],    
+    packages=find_packages(),    
 
     install_requires=['python-networkmanager'],
 
     entry_points={
         'console_scripts': [
-            'pifi_ap_startup=ap_startup:main',
+            'pifi_ap_startup=pifi.startup:main',
         ],
     }
 )
