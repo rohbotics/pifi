@@ -1,2 +1,4 @@
-# pi-in-the-fi
-Raspberry Pi Wifi stuff
+# pifi
+Wifi tools for the Raspberry Pi
+
+
