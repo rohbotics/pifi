@@ -3,7 +3,7 @@ Maintainer: Rohan Agrawal <send2arohan@gmail.com>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 9), dh-python, python-all, python-setuptools
+Build-Depends: debhelper (>= 9), dh-python, dh-systemd (>= 1.5), python-all, python-setuptools
 
 Package: pifi
 Architecture: all
