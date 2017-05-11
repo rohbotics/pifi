@@ -1,5 +1,5 @@
-pifi (0.0.1-1) UNRELEASED; urgency=medium
+pifi (0.0.2) UNRELEASED; urgency=medium
 
-  * Initial release. (Closes: #XXXXXX)
+  * Added systemd intergration
 
- -- Rohan Agrawal <send2arohan@gmail.com>  Sat, 06 May 2017 09:17:21 -0700
+ -- Rohan Agrawal <send2arohan@gmail.com>  Wed, 10 May 2017 20:17:41 -0700
