@@ -1,7 +1,7 @@
 # pifi
 Wifi tools for Robots with Raspberry Pis
 
-Currently this as a script that runs at bootup and does the following:
+Currently this is a script that runs at bootup and does the following:
 * Determine if there is Wifi device capable of access point mode
 * Scan for visable access points, and save the SSIDs to `/tmp/seen_ssids`
 * Go through any pending connections in `/etc/pifi_pending`, and see if any are visable
