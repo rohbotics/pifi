@@ -6,11 +6,28 @@ import NetworkManager
 
 import uuid
 
+def writeSeenSSIDs():
+    aps = dict()
+
+    for dev in NetworkManager.NetworkManager.GetDevices():
+        if dev.DeviceType != NetworkManager.NM_DEVICE_TYPE_WIFI:
+             continue
+        for ap in dev.SpecificDevice().GetAccessPoints():
+            aps[ap.Ssid] = ap
+
+    target = open('/tmp/seen_ssids', 'w')
+    target.truncate()
+
+    for ssids in aps:
+        target.write('%-30s \n' % (aps[ssids].Ssid))
+
+
 def checkCapablities(device_capabilities, capability):
     return device_capabilities & capability == capability
 
 
 def main():
+    writeSeenSSIDs()
     ApModeDevice = NetworkManager.Device
 
     for device in NetworkManager.NetworkManager.GetDevices():
