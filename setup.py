@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pifi',
-    version='0.0.1',
+    version='0.0.3',
     description='Wifi tools for the Raspberry Pi',
     url='https://github.com/rohbotics/pifi',
 
@@ -12,11 +12,12 @@ setup(
 
     packages=find_packages(),    
 
-    install_requires=['python-networkmanager'],
+    install_requires=['python-networkmanager', 'docopt'],
 
     entry_points={
         'console_scripts': [
             'pifi_ap_startup=pifi.startup:main',
+            'pifi=pifi.pifi:main',
         ],
     }
 )
