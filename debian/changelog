@@ -1,5 +1,5 @@
-pifi (0.1.0) UNRELEASED; urgency=medium
+pifi (0.1.2) UNRELEASED; urgency=medium
 
-  * Added basic cli tool for mangaging pifi 
+  * Added pkla to allow network manager over ssh, and override default 
 
- -- Rohan Agrawal <send2arohan@gmail.com>  Sun, 09 Jul 2017 09:51:16 -0700
+ -- Rohan Agrawal <rohan@aleopile.com>  Sun, 09 Jul 2017 11:22:53 -0700

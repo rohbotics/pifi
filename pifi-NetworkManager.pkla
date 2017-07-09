@@ -1,0 +1,7 @@
+[Allow access to the network manager API for all users]
+Identity=unix-group:netdev;unix-group:sudo
+Action=org.freedesktop.NetworkManager.*
+# Allow network manager changes by remote users
+ResultAny=yes
+ResultInactive=yes
+ResultActive=yes
