@@ -18,6 +18,7 @@ from docopt import docopt
 
 import NetworkManager
 import json
+import os
 
 def checkCapablities(device_capabilities, capability):
     return device_capabilities & capability == capability
@@ -46,6 +47,13 @@ def status():
         print("Device is connected to %s" % ''.join(current_connection[0]['802-11-wireless']['ssid']))
 
 def add(ssid, password):
+    if not os.path.isfile("/etc/pifi_pending"):
+        try:
+            with open('/etc/pifi_pending', 'w+') as pending_file:
+                json.dump([], pending_file)
+        except IOError as e:
+            print("Error creating /etc/pifi_pending, make sure you are running with sudo") 
+
     try:
         with open('/etc/pifi_pending', 'r+') as pending_file:    
             pending = json.load(pending_file)
@@ -67,7 +75,7 @@ def list_pending():
             print(connection['ssid'])
 
 def main():
-    arguments = docopt(__doc__, version='Pifi Version 0.1.0')
+    arguments = docopt(__doc__, version='Pifi Version 0.1.3')
     
     if arguments['status']:
         status()

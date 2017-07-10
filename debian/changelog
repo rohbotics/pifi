@@ -1,5 +1,7 @@
-pifi (0.1.2) UNRELEASED; urgency=medium
+pifi (0.1.3) UNRELEASED; urgency=medium
 
-  * Added pkla to allow network manager over ssh, and override default 
+  * create /etc/pifi_pending if it doesn't exist 
+  * include a /etc/pifi_pending file in the deb 
+  * have pifi --version report the right version
 
- -- Rohan Agrawal <rohan@aleopile.com>  Sun, 09 Jul 2017 11:22:53 -0700
+ -- Rohan Agrawal <rohan@aleopile.com>  Sun, 09 Jul 2017 22:43:20 -0700
