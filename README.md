@@ -30,7 +30,7 @@ Connect to the Robot's wifi (default UbiquityRobot, password robotseverywhere) o
 
 SSH into the robot with `ssh ubuntu@10.42.0.1`. 
 
-Once logged into the robot, run `sudo pifi add WIFI_SSID password`, and reboot `sudo reboot`.
+Once logged into the robot, run `sudo pifi add WIFI_SSID PASSWORD`, and reboot `sudo reboot`.
 
 Your robot should now be connected to your network.  
 
