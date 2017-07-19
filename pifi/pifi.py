@@ -1,5 +1,5 @@
 """
-Pifi
+pifi
 
 Usage:
   pifi status
