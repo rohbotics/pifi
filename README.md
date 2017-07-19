@@ -42,7 +42,7 @@ If that source is configured on your system, simply run `sudo apt install pifi`.
 To install from source, run `sudo python setup.py install` in the pifi directory after cloning the repo.
 
 ## Dependencies
-Note: Don't worry about dependancies if you are installing from debs, they will be installed automatically.
+Note: Don't worry about dependencies if you are installing from debs, they will be installed automatically.
 
 This package depends on python-networkmanager and python-docopt.
 
