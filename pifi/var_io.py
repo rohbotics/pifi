@@ -10,8 +10,10 @@ seen_SSIDs_path = "/var/lib/pifi/seen_ssids"
 pending_path = "/var/lib/pifi/pending"
 
 import os
+import json
 
 def ensureDir(file_path):
+    directory = os.path.dirname(file_path)
     try: 
         os.makedirs(directory)
     except FileExistsError:
@@ -26,14 +28,12 @@ def readSeenSSIDs():
     except FileNotFoundError:
         return list()
 
-def writeSeenSSIDs(aps):
-    try:
-        with open(seen_SSIDs_path, 'w+') as seen_file:
-            seen_file.truncate()
-            for ssids in aps:
-                seen_file.write('%-30s \n' % (aps[ssids].Ssid))
-    except FileNotFoundError:
-        ensureDir(pending_path)
+def writeSeenSSIDs(ssids):
+    ensureDir(seen_SSIDs_path)
+    with open(seen_SSIDs_path, 'w+') as seen_file:
+        seen_file.truncate()
+        for ssid in ssids:
+            seen_file.write('%-30s \n' % (ssid))
 
 def readPendingConnections():
     try:
@@ -43,10 +43,8 @@ def readPendingConnections():
         return list()
 
 def writePendingConnections(pending):
-    try:
-        with open(pending_path, 'w+') as pending_file:
-            pending_file.seek(0)  # rewind
-            json.dump(pending, pending_file)
-            pending_file.truncate()
-    except FileNotFoundError:
-        ensureDir(pending_path)
+    ensureDir(pending_path)
+    with open(pending_path, 'w+') as pending_file:
+        pending_file.seek(0)  # rewind
+        json.dump(pending, pending_file)
+        pending_file.truncate()
