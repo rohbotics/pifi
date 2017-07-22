@@ -48,11 +48,11 @@ def main():
         supports_ap = checkCapablities(wi_device.WirelessCapabilities, 
             NetworkManager.NM_WIFI_DEVICE_CAP_AP)
         if (supports_ap == True):
-            print "Network Mangager reports AP mode support on %s" % wi_device.HwAddress
+            print("Network Mangager reports AP mode support on %s" % wi_device.HwAddress)
             ApModeDevice = device
 
     if (ApModeDevice == NetworkManager.Device):
-        print "ERROR: Network Manager reports no AP mode support on any managed device"
+        print("ERROR: Network Manager reports no AP mode support on any managed device")
         exit(2)
 
     seenSSIDs = getSeenSSIDs(ApModeDevice)
@@ -66,7 +66,7 @@ def main():
         print("Device currently connected to: %s" 
             % ApModeDevice.SpecificDevice().ActiveAccessPoint.Ssid)
     else:
-        print "Device is not connected to any network, Looking for pending connections"
+        print("Device is not connected to any network, Looking for pending connections")
 
         new_ap_connection = getAvailiblePendingConnection(seenSSIDs, pendingConnections)
         if new_ap_connection is not None:
@@ -95,7 +95,7 @@ def main():
                 'ipv6': {'method': 'auto'}
             }
             
-            print "Connecting to %s" % new_ap_connection['ssid']
+            print("Connecting to %s" % new_ap_connection['ssid'])
             NetworkManager.NetworkManager.AddAndActivateConnection(settings, ApModeDevice, "/")
             
             pendingConnections.remove(new_ap_connection) 
@@ -104,12 +104,12 @@ def main():
             pending_file.write(json.dumps(pendingConnections))
             return
 		
-        print "No SSIDs assoicated with pending connections found, Starting AP mode"
+        print("No SSIDs assoicated with pending connections found, Starting AP mode")
 
         found_connection = False
         existing_connection = NetworkManager.Settings.Connection
 
-        print "Looking for existing AP mode connection"
+        print("Looking for existing AP mode connection")
         for connection in NetworkManager.Settings.ListConnections():
             settings = connection.GetSettings()
             if '802-11-wireless' in settings:
@@ -119,14 +119,14 @@ def main():
                   break
 
         if found_connection:
-            print "Found existing AP mode connection, SSID: %s" % \
-                existing_connection.GetSettings()['802-11-wireless']['ssid']
+            print("Found existing AP mode connection, SSID: %s" % 
+                existing_connection.GetSettings()['802-11-wireless']['ssid'])
 
-            print "Initializing AP Mode"
+            print("Initializing AP Mode")
             NetworkManager.NetworkManager.ActivateConnection(existing_connection, ApModeDevice, existing_connection)
         else:
-            print "No existing AP mode connections found"
-            print "Creating new default AP mode connection"
+            print("No existing AP mode connections found")
+            print("Creating new default AP mode connection")
             connection_uuid = str(uuid.uuid4())
 
             settings = {
@@ -152,5 +152,5 @@ def main():
                 'ipv6': {'method': 'ignore'}
             }
 
-            print "Initializing AP Mode"
+            print("Initializing AP Mode")
             NetworkManager.NetworkManager.AddAndActivateConnection(settings, ApModeDevice, "/")
