@@ -23,6 +23,7 @@ def managedAPCapableDevices():
         if (supports_ap == True):
             yield device
 
-def seenSSIDs(device):
-    for ap in device.SpecificDevice().GetAccessPoints():
-        yield ap.Ssid
+def seenSSIDs(devices):
+    for device in devices:
+        for ap in device.SpecificDevice().GetAccessPoints():
+            yield ap.Ssid
