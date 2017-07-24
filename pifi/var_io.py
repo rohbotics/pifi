@@ -4,15 +4,23 @@ This module handles all of the pifi files in /var
 The files in /var are the pending connections file, and the seen SSIDs file
 """
 
-# This file uses python3 features, python3 is required
+# This file requires python3, due to better more detailed exceptions
+
 
 seen_SSIDs_path = "/var/lib/pifi/seen_ssids"
 pending_path = "/var/lib/pifi/pending"
+
+# Used for debugging
+# seen_SSIDs_path = "/tmp/pifi/seen_ssids"
+# pending_path = "/tmp/pifi/pending"
 
 import os
 import json
 
 def ensureDir(file_path):
+    """
+    Takes a path to a file, and creates the parent directory if it doen't exist.
+    """
     directory = os.path.dirname(file_path)
     try: 
         os.makedirs(directory)
@@ -20,6 +28,10 @@ def ensureDir(file_path):
         pass
 
 def readSeenSSIDs():
+    """
+    Returns a list of strings containg the ssids in seen_SSIDs_path.
+    One line of the file is one ssid.
+    """
     try:
         with open(seen_SSIDs_path) as seen_file:
             seen_ssids = seen_file.readlines()
@@ -29,6 +41,10 @@ def readSeenSSIDs():
         return list()
 
 def writeSeenSSIDs(ssids):
+    """
+    Takes a list of ssids and writes them to seen_SSIDs_path.
+    One ssid per line.
+    """
     ensureDir(seen_SSIDs_path)
     with open(seen_SSIDs_path, 'w+') as seen_file:
         seen_file.truncate()
@@ -36,15 +52,27 @@ def writeSeenSSIDs(ssids):
             seen_file.write('%-30s \n' % (ssid))
 
 def readPendingConnections():
+    """
+    Returns a list parsed from the json in the file pending_path.
+    """
     try:
         with open(pending_path, 'r') as pending_file:
-            return json.load(pending_file)
+            pending_connections = json.load(pending_file)
+            if not isinstance(pending_connections, list):
+                raise ValueError("%s does not contain a json list" % pending_path)
+            return pending_connections
     except FileNotFoundError:
         return list()
 
 def writePendingConnections(pending):
+    """
+    Takes a list of dicts and writes the json representation to pending_path.
+    """
     ensureDir(pending_path)
     with open(pending_path, 'w+') as pending_file:
         pending_file.seek(0)  # rewind
-        json.dump(pending, pending_file)
+        if pending is not None:
+            json.dump(pending, pending_file)
+        else:
+            json.dump(list(), pending_file)
         pending_file.truncate()
