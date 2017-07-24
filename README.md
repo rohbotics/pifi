@@ -19,8 +19,8 @@ Options:
 
 Pifi runs a script at boot up that does the following:
 * Determine if there is Wifi device capable of access point mode
-* Scan for visable access points, and save the SSIDs to `/tmp/seen_ssids`
-* Go through any pending connections in `/etc/pifi_pending`, and see if any are visable
+* Scan for visable access points, and save the SSIDs to `/var/lib/pifi/seen_ssids`
+* Go through any pending connections in `/var/lib/pifi/pending`, and see if any are visable
 * If any of the pending connections are visable, connect to them, and remove them from pending
 * Otherwise look for an existing AP mode definiton and start it
 * If there is no existing AP mode definition create one with SSID:'UbiquityRobot' and password:'robotseverywhere'
@@ -39,10 +39,12 @@ The recommended way to install is from debs. The apt source at https://packages.
 
 If that source is configured on your system, simply run `sudo apt install pifi`.
 
-To install from source, run `sudo python setup.py install` in the pifi directory after cloning the repo.
+To install from source, run `sudo python3 setup.py install` in the pifi directory after cloning the repo.
 
 ## Dependencies
 Note: Don't worry about dependencies if you are installing from debs, they will be installed automatically.
 
-This package depends on python-networkmanager and python-docopt.
+This package depends on python3-networkmanager and python3-docopt.
+
+python3-networkmanager is not availible in the standard ubuntu repos, so you will have install it from `pip3 install python-networkmanager`, or use the debian package from https://packages.ubiquityrobotics.com/.
 
