@@ -22,6 +22,8 @@ import os
 import pifi.nm_helper as nm
 import pifi.var_io as var_io
 
+import uuid
+
 def status():
     ApModeDevice = NetworkManager.Device
 
@@ -42,22 +44,49 @@ def status():
         exit(2)
 
 def add(ssid, password):
+    pending = var_io.readPendingConnections()
+
+    new_connection = {
+            'connection': {
+                'id': str(ssid),
+                'type': '802-11-wireless',
+                'autoconnect': True,
+                'uuid': str(uuid.uuid4())
+            },
+
+            '802-11-wireless': {
+                'mode': 'infrastructure',
+                'security': '802-11-wireless-security',
+                'ssid': ssid
+            },
+
+            '802-11-wireless-security': {
+                'key-mgmt': 'wpa-psk', # We only support WPA2-PSK networks for now
+                'psk': password
+            },
+
+            'ipv4': {'method': 'auto'},
+            'ipv6': {'method': 'auto'}
+    }
+
+    pending.append(new_connection)
+
     try:
-        pending = var_io.readPendingConnections()
-        pending.append({'ssid' : ssid, 'password' : password})
         var_io.writePendingConnections(pending)
     except PermissionError:
         print("Error writing to /var/lib/pifi/pending, make sure you are running with sudo")
 
 def list_seen():
-    with open('/tmp/seen_ssids') as seen_file:
-        print(seen_file.read(), end='')
+    for ssid in var_io.readSeenSSIDs():
+        print(ssid)
 
 def list_pending():
-    with open('/etc/pifi_pending') as pending_file:    
-        pending = json.load(pending_file)
-        for connection in pending:
-            print(connection['ssid'])
+    for con in var_io.readPendingConnections():
+        try:
+            print(con['802-11-wireless']['ssid'])
+        except KeyError:
+            print("WARN: Found non wireless pending connection: %s" % 
+                    con['connection']['id'])
 
 def main():
     arguments = docopt(__doc__, version='pifi version 0.1.3')

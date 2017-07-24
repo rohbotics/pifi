@@ -7,150 +7,98 @@ import NetworkManager
 import uuid
 import json
 
-def getSeenSSIDs(device):
-    aps = dict()
-
-    for ap in device.SpecificDevice().GetAccessPoints():
-        aps[ap.Ssid] = ap
-
-    return aps
-
-def writeSeenSSIDs(aps):
-    target = open('/tmp/seen_ssids', 'w')
-    target.truncate()
-
-    for ssids in aps:
-        target.write('%-30s \n' % (aps[ssids].Ssid))
-
-def readPendingConnections():
-    try:    
-        pending_file = open('/etc/pifi_pending', 'r')
-        return json.load(pending_file)
-    except IOError:
-        return dict()
-
-def checkCapablities(device_capabilities, capability):
-    return device_capabilities & capability == capability
-
-def getAvailiblePendingConnection(seenSSIDs, pendingConnections):
-    for ssid in seenSSIDs:
-        for pcon in pendingConnections:
-            if ssid == pcon['ssid']:
-                return pcon
+import pifi.nm_helper as nm
+import pifi.var_io as var_io
 
 def main():
-    ApModeDevice = NetworkManager.Device
+    # Expirimental dual wifi support
+    ApModeDevice = NetworkManager.Device # Device used for AP mode
+    ClientModeDevice = NetworkManager.Device # Device for connecting out
 
-    for device in NetworkManager.NetworkManager.GetDevices():
-        if device.DeviceType != NetworkManager.NM_DEVICE_TYPE_WIFI:
-            continue
-        wi_device = device.SpecificDevice()
-        supports_ap = checkCapablities(wi_device.WirelessCapabilities, 
-            NetworkManager.NM_WIFI_DEVICE_CAP_AP)
-        if (supports_ap == True):
-            print("Network Mangager reports AP mode support on %s" % wi_device.HwAddress)
-            ApModeDevice = device
+    for device in nm.managedAPCapableDevices():
+        print("Using %s for AP mode support" % device.Interface)
+        ApModeDevice = device
+        break # Use first device for now
 
     if (ApModeDevice == NetworkManager.Device):
-        print("ERROR: Network Manager reports no AP mode support on any managed device")
+        print("ERROR: Could not get a AP capable device from NetworkManager")
         exit(2)
 
-    seenSSIDs = getSeenSSIDs(ApModeDevice)
-    writeSeenSSIDs(seenSSIDs)
-    pendingConnections = readPendingConnections()   
+    for device in nm.managedWifiDevices():
+        print("Using %s for wifi client mode" % device.Interface)
+        ClientModeDevice = device
+        break # Use first device for now
+
+    if (ClientModeDevice == NetworkManager.Device):
+        print("ERROR: Could not get a wifi client device to use from NetworkManager")
+        exit(2)
+
+    var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
  
     # Allow 30 seconds for network manager to sort itself out
     time.sleep(30)
 
-    if (ApModeDevice.State == 100):
-        print("Device currently connected to: %s" 
-            % ApModeDevice.SpecificDevice().ActiveAccessPoint.Ssid)
+    if (ClientModeDevice.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED):
+        print("Client Device currently connected to: %s" 
+            % ClientModeDevice.SpecificDevice().ActiveAccessPoint.Ssid)
+        return
     else:
         print("Device is not connected to any network, Looking for pending connections")
 
-        new_ap_connection = getAvailiblePendingConnection(seenSSIDs, pendingConnections)
-        if new_ap_connection is not None:
-            connection_uuid = str(uuid.uuid4())
+        pending = var_io.readPendingConnections()
+        # We can't use the generator directly because we want len, so we use list()
+        availible_connections = list(nm.availibleConnections(ClientModeDevice, pending))
 
-            settings = {
-                'connection': {
-                    'id': new_ap_connection['ssid'],
-                    'type': '802-11-wireless',
-                    'autoconnect': True,
-                    'uuid': connection_uuid
-                },
+        if len(availible_connections) >= 1:
+            # Use the best connection
+            best_ap, best_con = nm.selectConnection(availible_connections)
 
-                '802-11-wireless': {
-                    'mode': 'infrastructure',
-                    'security': '802-11-wireless-security',
-                    'ssid': new_ap_connection['ssid']
-                },
-
-                '802-11-wireless-security': {
-                    'key-mgmt': 'wpa-psk',
-                    'psk': new_ap_connection['password']
-                },
-
-                'ipv4': {'method': 'auto'},
-                'ipv6': {'method': 'auto'}
-            }
+            print("Connecting to %s" % best_con['802-11-wireless']['ssid'])
+            NetworkManager.NetworkManager.AddAndActivateConnection(best_con, ClientModeDevice, best_ap)
             
-            print("Connecting to %s" % new_ap_connection['ssid'])
-            NetworkManager.NetworkManager.AddAndActivateConnection(settings, ApModeDevice, "/")
-            
-            pendingConnections.remove(new_ap_connection) 
-            pending_file = open('/etc/pifi_pending', 'w')
-            pending_file.truncate()
-            pending_file.write(json.dumps(pendingConnections))
+            new_pending = var_io.readPendingConnections().remove(best_con)
+            var_io.writePendingConnections(new_pending)
             return
 		
-        print("No SSIDs assoicated with pending connections found, Starting AP mode")
-
-        found_connection = False
-        existing_connection = NetworkManager.Settings.Connection
+        # If we reach this point, we gave up on Client mode
+        print("No SSIDs from pending connections found, Starting AP mode")
 
         print("Looking for existing AP mode connection")
-        for connection in NetworkManager.Settings.ListConnections():
-            settings = connection.GetSettings()
-            if '802-11-wireless' in settings:
-                if settings['802-11-wireless']['mode'] == 'ap':
-                  found_connection = True
-                  existing_connection = connection
-                  break
 
-        if found_connection:
+        for connection in nm.existingAPConnections():
             print("Found existing AP mode connection, SSID: %s" % 
-                existing_connection.GetSettings()['802-11-wireless']['ssid'])
-
+                connection.GetSettings()['802-11-wireless']['ssid'])
             print("Initializing AP Mode")
-            NetworkManager.NetworkManager.ActivateConnection(existing_connection, ApModeDevice, existing_connection)
-        else:
-            print("No existing AP mode connections found")
-            print("Creating new default AP mode connection")
-            connection_uuid = str(uuid.uuid4())
+            NetworkManager.NetworkManager.ActivateConnection(connection, ApModeDevice, "/")
+            return # We don't acutally want to loop, just use the first iter
 
-            settings = {
-                'connection': {
-                    'id': 'Hotspot',
-                    'type': '802-11-wireless',
-                    'autoconnect': False,
-                    'uuid': connection_uuid
-                },
+        print("No existing AP mode connections found")
+        print("Creating new default AP mode connection")
 
-                '802-11-wireless': {
-                    'mode': 'ap',
-                    'security': '802-11-wireless-security',
-                    'ssid': 'UbiquityRobot'
-                },
+        # Default AP mode connection
+        # TODO: make this come from a config file
+        settings = {
+            'connection': {
+                'id': 'Hotspot',
+                'type': '802-11-wireless',
+                'autoconnect': False,
+                'uuid': str(uuid.uuid4())
+            },
 
-                '802-11-wireless-security': {
-                    'key-mgmt': 'wpa-psk',
-                    'psk': 'robotseverywhere'
-                },
+            '802-11-wireless': {
+                'mode': 'ap',
+                'security': '802-11-wireless-security',
+                'ssid': 'UbiquityRobot'
+            },
 
-                'ipv4': {'method': 'shared'},
-                'ipv6': {'method': 'ignore'}
-            }
+            '802-11-wireless-security': {
+                'key-mgmt': 'wpa-psk',
+                'psk': 'robotseverywhere'
+            },
 
-            print("Initializing AP Mode")
-            NetworkManager.NetworkManager.AddAndActivateConnection(settings, ApModeDevice, "/")
+            'ipv4': {'method': 'shared'},
+            'ipv6': {'method': 'ignore'}
+        }
+
+        print("Initializing AP Mode")
+        NetworkManager.NetworkManager.AddAndActivateConnection(settings, ApModeDevice, "/")
