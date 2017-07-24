@@ -16,7 +16,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'pifi_ap_startup=pifi.startup:main',
+            'pifi_startup=pifi.startup:main',
             'pifi=pifi.pifi:main',
         ],
     }
