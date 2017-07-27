@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='pifi',
     version='0.1.3',
-    description='Wifi tools for the Raspberry Pi',
+    description='Wifi provisioning tools for robots with Raspberry Pis',
     url='https://github.com/rohbotics/pifi',
 
     author='Rohan Agrawal',

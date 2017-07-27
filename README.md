@@ -1,5 +1,5 @@
 # pifi
-Wifi tools for Robots with Raspberry Pis
+Wifi provisioning tools for robots with Raspberry Pis.
 
 Pifi uses network manager to do the heavy lifting under the hood.
 
