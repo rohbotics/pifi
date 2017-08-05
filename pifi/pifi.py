@@ -3,7 +3,7 @@ pifi
 
 Usage:
   pifi status
-  pifi add <ssid> <password>
+  pifi add <ssid> [password]
   pifi list seen
   pifi list pending
   pifi --version
@@ -46,28 +46,48 @@ def status():
 def add(ssid, password):
     pending = var_io.readPendingConnections()
 
-    new_connection = {
-            'connection': {
-                'id': str(ssid),
-                'type': '802-11-wireless',
-                'autoconnect': True,
-                'uuid': str(uuid.uuid4())
-            },
+    if password is not None:
+        new_connection = {
+                'connection': {
+                    'id': str(ssid),
+                    'type': '802-11-wireless',
+                    'autoconnect': True,
+                    'uuid': str(uuid.uuid4())
+                },
 
-            '802-11-wireless': {
-                'mode': 'infrastructure',
-                'security': '802-11-wireless-security',
-                'ssid': ssid
-            },
+                '802-11-wireless': {
+                    'mode': 'infrastructure',
+                    'security': '802-11-wireless-security',
+                    'ssid': ssid
+                },
 
-            '802-11-wireless-security': {
-                'key-mgmt': 'wpa-psk', # We only support WPA2-PSK networks for now
-                'psk': password
-            },
+                '802-11-wireless-security': {
+                    'key-mgmt': 'wpa-psk', # We only support WPA2-PSK networks for now
+                    'psk': password
+                },
 
-            'ipv4': {'method': 'auto'},
-            'ipv6': {'method': 'auto'}
-    }
+                'ipv4': {'method': 'auto'},
+                'ipv6': {'method': 'auto'}
+        }
+
+    else:
+        new_connection = {
+                'connection': {
+                    'id': str(ssid),
+                    'type': '802-11-wireless',
+                    'autoconnect': True,
+                    'uuid': str(uuid.uuid4())
+                },
+
+                '802-11-wireless': {
+                    'mode': 'infrastructure',
+                    'ssid': ssid
+                },
+
+                'ipv4': {'method': 'auto'},
+                'ipv6': {'method': 'auto'}
+        }
+
 
     pending.append(new_connection)
 
@@ -95,7 +115,7 @@ def main():
         status()
     if arguments['add']:
         if '<password>' in arguments:
-            add(arguments['<ssid>'], arguments['<password>'])
+            add(arguments['<ssid>'], arguments['[password]'])
         else:
             add(arguments['<ssid>'], None)
     if arguments['list'] and arguments['seen']:
