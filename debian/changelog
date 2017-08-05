@@ -1,7 +1,16 @@
-pifi (0.1.3) UNRELEASED; urgency=medium
+pifi (0.2.0) xenial; urgency=medium
+
+  * Switch to Python 3
+  * Handle connection settings in the cli part
+  * Support passwordless networks
+  * Modularize the code
+
+ -- Rohan Agrawal <send2arohan@gmail.com>  Fri, 04 Aug 2017 21:42:36 -0700
+
+pifi (0.1.3) xenial; urgency=medium
 
   * create /etc/pifi_pending if it doesn't exist 
   * include a /etc/pifi_pending file in the deb 
   * have pifi --version report the right version
 
- -- Rohan Agrawal <rohan@aleopile.com>  Sun, 09 Jul 2017 22:43:20 -0700
+ -- Rohan Agrawal <send2arohan@gmail.com>  Fri, 04 Aug 2017 21:00:14 -0700
