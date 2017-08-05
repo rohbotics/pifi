@@ -31,6 +31,9 @@ def status():
         wi_device = device.SpecificDevice()
         print("Network Mangager reports AP mode support on %s" % wi_device.HwAddress)
         ApModeDevice = device
+        if ApModeDevice.State != 100:
+            print("Device is not activated")
+            exit(0)
         current_connection = ApModeDevice.GetAppliedConnection(0)
         if current_connection[0]['802-11-wireless']['mode'] == "ap":
             print("Device is currently acting as an Access Point")
