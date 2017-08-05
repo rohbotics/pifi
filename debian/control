@@ -3,9 +3,9 @@ Maintainer: Rohan Agrawal <send2arohan@gmail.com>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.7
-Build-Depends: debhelper (>= 9), dh-python, dh-systemd (>= 1.5), python3-all, python3-setuptools
+Build-Depends: debhelper (>= 9), dh-python, dh-systemd (>= 1.5), python3-all, python3-setuptools, python3-networkmanager, python3-docopt 
 
 Package: pifi
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, python3-networkmanager
 Description: Raspberry Pi Wifi Provisioning Tools
