@@ -1,3 +1,9 @@
+pifi (0.2.3) UNRELEASED; urgency=medium
+
+  * Bugfix for bad optional argument handling 
+
+ -- Rohan Agrawal <send2arohan@gmail.com>  Sun, 06 Aug 2017 14:34:56 -0700
+
 pifi (0.2.2) xenial; urgency=medium
 
   * Fix systemd service 

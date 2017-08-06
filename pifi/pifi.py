@@ -3,7 +3,7 @@ pifi
 
 Usage:
   pifi status
-  pifi add <ssid> [password]
+  pifi add <ssid> [<password>]
   pifi list seen
   pifi list pending
   pifi --version
@@ -112,13 +112,13 @@ def list_pending():
                     con['connection']['id'])
 
 def main():
-    arguments = docopt(__doc__, version='pifi version 0.2.2')
+    arguments = docopt(__doc__, version='pifi version 0.2.3')
     
     if arguments['status']:
         status()
     if arguments['add']:
-        if '<password>' in arguments:
-            add(arguments['<ssid>'], arguments['[password]'])
+        if '<password>' is not None:
+            add(arguments['<ssid>'], arguments['<password>'])
         else:
             add(arguments['<ssid>'], None)
     if arguments['list'] and arguments['seen']:
