@@ -1,3 +1,9 @@
+pifi (0.2.1) xenial; urgency=medium
+
+  * Fix dependancy issue with python3-networkmanager 
+
+ -- Rohan Agrawal <rohan@aleopile.com>  Sun, 06 Aug 2017 10:05:12 -0700
+
 pifi (0.2.0) xenial; urgency=medium
 
   * Switch to Python 3
