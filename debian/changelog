@@ -1,3 +1,9 @@
+pifi (0.2.2) UNRELEASED; urgency=medium
+
+  * Fix systemd service 
+
+ -- Rohan Agrawal <rohan@aleopile.com>  Sun, 06 Aug 2017 10:10:02 -0700
+
 pifi (0.2.1) xenial; urgency=medium
 
   * Fix dependancy issue with python3-networkmanager 

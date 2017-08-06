@@ -112,7 +112,7 @@ def list_pending():
                     con['connection']['id'])
 
 def main():
-    arguments = docopt(__doc__, version='pifi version 0.2.1')
+    arguments = docopt(__doc__, version='pifi version 0.2.2')
     
     if arguments['status']:
         status()

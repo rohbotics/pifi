@@ -2,7 +2,7 @@
 After=NetworkManager.service
 
 [Service]
-ExecStart=/usr/bin/pifi_ap_startup
+ExecStart=/usr/bin/pifi_startup
 
 [Install]
 WantedBy=multi-user.target
