@@ -1,6 +1,9 @@
 # pifi
 Wifi provisioning tools for robots with Raspberry Pis.
 
+[![Build Status](https://travis-ci.org/rohbotics/pifi.svg?branch=master)](https://travis-ci.org/rohbotics/pifi)
+[![Coverage Status](https://coveralls.io/repos/github/rohbotics/pifi/badge.svg?branch=master)](https://coveralls.io/github/rohbotics/pifi?branch=master)
+
 Pifi uses network manager to do the heavy lifting under the hood.
 
 The command line tool is `pifi`:
