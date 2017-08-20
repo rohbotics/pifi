@@ -21,5 +21,5 @@ setup(
         ],
     },
 
-    test_suite = 'test.test_var_io',
+    test_suite = 'test',
 )

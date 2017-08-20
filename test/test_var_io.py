@@ -60,6 +60,32 @@ class VarIOTests(unittest.TestCase):
         self.assertIn(mock.call().write('Bar\n'), f.mock_calls)
         self.assertIn(mock.call().write('Baz\n'), f.mock_calls)
 
+    def test_non_existant_pending(self):
+        f = mock.Mock(side_effect=FileNotFoundError('foo'))
+        self.assertEqual([], var_io.readPendingConnections(open=f))
+
+    def test_empty_pending(self):
+        f = mock.mock_open(read_data='')
+        self.assertEqual([], var_io.readPendingConnections(open=f))
+
+    def test_empty_list_pending(self):
+        f = mock.mock_open(read_data='[]')
+        self.assertEqual([], var_io.readPendingConnections(open=f))
+
+    def test_non_list_pending(self):
+        f = mock.mock_open(read_data='{ "foo" : "bar" }')
+        with self.assertRaises(ValueError):
+            var_io.readPendingConnections(open=f)
+
+    def test_one_list_pending(self):
+        f = mock.mock_open(read_data='[{ "foo" : "bar" }]')
+        self.assertEqual([{ 'foo' : 'bar' }], var_io.readPendingConnections(open=f))
+
+    def test_empty_write_existant_pending(self):
+        f = mock.Mock(side_effect=FileNotFoundError('foo'))
+        self.assertEqual([], var_io.readPendingConnections(open=f))
+
+        
 
 
 def main():

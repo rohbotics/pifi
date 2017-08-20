@@ -57,7 +57,11 @@ def readPendingConnections(open=open):
     """
     try:
         with open(pending_path, 'r') as pending_file:
-            pending_connections = json.load(pending_file)
+            try:
+                pending_connections = json.load(pending_file)
+            except ValueError:
+                print ("WARN failed to decode json in %s, ignoring" % pending_path)
+                return list()
             if not isinstance(pending_connections, list):
                 raise ValueError("%s does not contain a json list" % pending_path)
             return pending_connections
