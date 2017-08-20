@@ -2,6 +2,7 @@ import unittest
 from unittest import mock
 import pifi.var_io as var_io
 from io import StringIO
+import os
 
 class VarIOTests(unittest.TestCase):
     
@@ -112,6 +113,19 @@ class VarIOTests(unittest.TestCase):
         ed.assert_called_once_with(var_io.pending_path)
         self.assertEqual('[{ "foo" : "bar" }]'.replace(" ", ""), 
                          output.getvalue().replace(" ", ""))
+
+    def test_ensure_dir(self):
+        var_io.ensureDir('/tmp/pifi/test/foo')
+        self.assertTrue(os.path.exists('/tmp/pifi/test/'))
+        self.assertTrue(os.path.isdir('/tmp/pifi/test/'))
+        self.assertFalse(os.path.exists('/tmp/pifi/test/foo'))
+        var_io.ensureDir('/tmp/pifi/test/foo')
+        self.assertTrue(os.path.exists('/tmp/pifi/test/'))
+        self.assertTrue(os.path.isdir('/tmp/pifi/test/'))
+        self.assertFalse(os.path.exists('/tmp/pifi/test/foo'))
+        
+        # Cleanup
+        os.rmdir('/tmp/pifi/test/') 
 
 def main():
     unittest.main()
