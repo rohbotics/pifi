@@ -30,7 +30,11 @@ def ensureDir(file_path):
 def readSeenSSIDs(open=open):
     """
     Returns a list of strings containg the ssids in seen_SSIDs_path.
-    One line of the file is one ssid.
+    One line of the file is one ssid in the list.
+
+    If the file does not exist then return a empty list.
+
+    Any other error will bubble up.
     """
     try:
         with open(seen_SSIDs_path) as seen_file:
@@ -44,6 +48,8 @@ def writeSeenSSIDs(ssids, open=open, ensureDir=ensureDir):
     """
     Takes a list of ssids and writes them to seen_SSIDs_path.
     One ssid per line.
+
+    If the file already exists, this overwrites it.
     """
     ensureDir(seen_SSIDs_path)
     with open(seen_SSIDs_path, 'w+') as seen_file:
@@ -54,6 +60,9 @@ def writeSeenSSIDs(ssids, open=open, ensureDir=ensureDir):
 def readPendingConnections(open=open):
     """
     Returns a list parsed from the json in the file pending_path.
+
+    If the file does not exist, or does not have valid json then return a empty list.
+    If the file json is parsed and is not a list, raises a ValueError.
     """
     try:
         with open(pending_path, 'r') as pending_file:
@@ -71,6 +80,8 @@ def readPendingConnections(open=open):
 def writePendingConnections(pending, open=open, ensureDir=ensureDir):
     """
     Takes a list of dicts and writes the json representation to pending_path.
+
+    If the file already exists, this overwrites it.
     """
     ensureDir(pending_path)
     with open(pending_path, 'w+') as pending_file:

@@ -62,6 +62,30 @@ class VarIOTests(unittest.TestCase):
         self.assertIn(mock.call().write('Bar\n'), f.mock_calls)
         self.assertIn(mock.call().write('Baz\n'), f.mock_calls)
 
+    def test_write_multiple_existing_file_SSIDs(self):
+        output = StringIO("Cats\n")
+        ed = mock.MagicMock()
+        f = mock.Mock(return_value=output)
+        output.close = mock.MagicMock()
+
+        var_io.writeSeenSSIDs(['Foo', 'Bar', 'Baz'], open=f, ensureDir=ed)
+        ed.assert_called_once_with(var_io.seen_SSIDs_path)
+
+        self.assertNotEqual("Cats\nFoo\nBar\nBaz\n", output.getvalue())
+        self.assertEqual("Foo\nBar\nBaz\n", output.getvalue())
+
+    def test_write_multiple_existing_longer_SSIDs(self):
+        output = StringIO("Foo\nBar\nBaz\n")
+        ed = mock.MagicMock()
+        f = mock.Mock(return_value=output)
+        output.close = mock.MagicMock()
+
+        var_io.writeSeenSSIDs(['Cats'], open=f, ensureDir=ed)
+        ed.assert_called_once_with(var_io.seen_SSIDs_path)
+
+        self.assertNotEqual("Foo\nBar\nBaz\nCats\n", output.getvalue())
+        self.assertEqual("Cats\n", output.getvalue())
+
     def test_non_existant_pending(self):
         f = mock.Mock(side_effect=FileNotFoundError('foo'))
         self.assertEqual([], var_io.readPendingConnections(open=f))
@@ -114,6 +138,28 @@ class VarIOTests(unittest.TestCase):
         self.assertEqual('[{ "foo" : "bar" }]'.replace(" ", ""), 
                          output.getvalue().replace(" ", ""))
 
+    def test_one_write_existing_pending(self):
+        output = StringIO('[{ "foo" : "baz" }]')
+        ed = mock.MagicMock()
+        f = mock.Mock(return_value=output)
+        output.close = mock.MagicMock()
+
+        var_io.writePendingConnections([{ 'foo' : 'bar' }],  open=f, ensureDir=ed)
+        ed.assert_called_once_with(var_io.pending_path)
+        self.assertEqual('[{ "foo" : "bar" }]'.replace(" ", ""), 
+                         output.getvalue().replace(" ", ""))
+
+    def test_one_write_existing_longer_pending(self):
+        output = StringIO('[{ "foo" : "long words" }, { "bar" : "longer words" }]')
+        ed = mock.MagicMock()
+        f = mock.Mock(return_value=output)
+        output.close = mock.MagicMock()
+
+        var_io.writePendingConnections([{ 'foo' : 'bar' }],  open=f, ensureDir=ed)
+        ed.assert_called_once_with(var_io.pending_path)
+        self.assertEqual('[{ "foo" : "bar" }]'.replace(" ", ""), 
+                         output.getvalue().replace(" ", ""))
+
     def test_ensure_dir(self):
         var_io.ensureDir('/tmp/pifi/test/foo')
         self.assertTrue(os.path.exists('/tmp/pifi/test/'))
@@ -123,7 +169,7 @@ class VarIOTests(unittest.TestCase):
         self.assertTrue(os.path.exists('/tmp/pifi/test/'))
         self.assertTrue(os.path.isdir('/tmp/pifi/test/'))
         self.assertFalse(os.path.exists('/tmp/pifi/test/foo'))
-        
+
         # Cleanup
         os.rmdir('/tmp/pifi/test/') 
 
