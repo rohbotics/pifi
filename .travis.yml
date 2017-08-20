@@ -2,8 +2,11 @@ language: python
 python:
   - "3.4"
   - "3.5"
+addons:
+  apt:
+    packages:
+    - python3-dbus # Make sure that all system deps for dbus are installed
 install:
   pip install .
-
 script:
   python3 setup.py test
