@@ -10,7 +10,7 @@ setup(
     author_email='send2arohan@gmail.com',
     license='BSD',
 
-    packages=find_packages(),    
+    packages=find_packages(exclude=['test']),    
 
     install_requires=['python-networkmanager', 'docopt'],
 
@@ -19,5 +19,7 @@ setup(
             'pifi_startup=pifi.startup:main',
             'pifi=pifi.pifi:main',
         ],
-    }
+    },
+
+    test_suite = 'test.test_var_io',
 )
