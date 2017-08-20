@@ -1,6 +1,7 @@
 import unittest
 from unittest import mock
 import pifi.var_io as var_io
+from io import StringIO
 
 class VarIOTests(unittest.TestCase):
     
@@ -81,12 +82,36 @@ class VarIOTests(unittest.TestCase):
         f = mock.mock_open(read_data='[{ "foo" : "bar" }]')
         self.assertEqual([{ 'foo' : 'bar' }], var_io.readPendingConnections(open=f))
 
-    def test_empty_write_existant_pending(self):
-        f = mock.Mock(side_effect=FileNotFoundError('foo'))
-        self.assertEqual([], var_io.readPendingConnections(open=f))
+    def test_empty_write_pending(self):
+        output = StringIO()
+        ed = mock.MagicMock()
+        f = mock.Mock(return_value=output)
+        output.close = mock.MagicMock()
 
-        
+        var_io.writePendingConnections([],  open=f, ensureDir=ed)
+        ed.assert_called_once_with(var_io.pending_path)
+        self.assertEqual('[]', output.getvalue().strip())
 
+    def test_none_write_pending(self):
+        output = StringIO()
+        ed = mock.MagicMock()
+        f = mock.Mock(return_value=output)
+        output.close = mock.MagicMock()
+
+        var_io.writePendingConnections(None,  open=f, ensureDir=ed)
+        ed.assert_called_once_with(var_io.pending_path)
+        self.assertEqual('[]', output.getvalue().strip())
+
+    def test_one_write_pending(self):
+        output = StringIO()
+        ed = mock.MagicMock()
+        f = mock.Mock(return_value=output)
+        output.close = mock.MagicMock()
+
+        var_io.writePendingConnections([{ 'foo' : 'bar' }],  open=f, ensureDir=ed)
+        ed.assert_called_once_with(var_io.pending_path)
+        self.assertEqual('[{ "foo" : "bar" }]'.replace(" ", ""), 
+                         output.getvalue().replace(" ", ""))
 
 def main():
     unittest.main()
