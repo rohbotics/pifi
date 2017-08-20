@@ -9,6 +9,10 @@ addons:
     - libdbus-1-dev # Make sure that all system deps for dbus are installed
     - libdbus-glib-1-dev # Make sure that all system deps for dbus are installed
 install:
-  pip install .
-script:
-  python3 setup.py test
+  - pip install .
+  - pip install coveralls 
+
+script: coverage run --source pifi setup.py test
+
+after_success:
+    coveralls
