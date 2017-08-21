@@ -10,7 +10,7 @@ import NetworkManager
 def checkCapablities(device_capabilities, capability):
     return device_capabilities & capability == capability
 
-def managedWifiDevices():
+def managedWifiDevices(NetworkManager=NetworkManager):
     """
     Generator that yields Wifi devices managed by NetworkManager.
 
@@ -20,13 +20,13 @@ def managedWifiDevices():
         if device.DeviceType == NetworkManager.NM_DEVICE_TYPE_WIFI:
             yield device
 
-def managedAPCapableDevices():
+def managedAPCapableDevices(NetworkManager=NetworkManager):
     """
     Generator that yields AP capable Wifi devices managed by NetworkManager.
 
     Does not return 'specific devices' call SpecificDevice() to get one.
     """
-    for device in managedWifiDevices():
+    for device in managedWifiDevices(NetworkManager=NetworkManager):
         wi_device = device.SpecificDevice()
         supports_ap = checkCapablities(wi_device.WirelessCapabilities,
             NetworkManager.NM_WIFI_DEVICE_CAP_AP)
@@ -58,7 +58,7 @@ def selectConnection(availible_connections):
             return (ap, con)
     raise RuntimeError("No connections in availible_connections could be found")
 
-def existingAPConnections():
+def existingAPConnections(NetworkManager=NetworkManager):
     for connection in NetworkManager.Settings.ListConnections():
         settings = connection.GetSettings()
         if '802-11-wireless' in settings:
