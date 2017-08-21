@@ -1,9 +1,10 @@
 import unittest
 from unittest import mock
-import pifi.nm_helper as nm_helper
 from io import StringIO
-import os
-import NetworkManager
+import os, sys
+
+sys.modules['NetworkManager'] = mock.MagicMock()
+import pifi.nm_helper as nm_helper
 
 class NMHelperTests(unittest.TestCase):
 

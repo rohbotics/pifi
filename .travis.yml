@@ -1,4 +1,3 @@
-sudo: required
 dist: trusty
 language: python
 python:
@@ -10,10 +9,7 @@ addons:
     - python3-dbus # Make sure that all system deps for dbus are installed
     - libdbus-1-dev # Make sure that all system deps for dbus are installed
     - libdbus-glib-1-dev # Make sure that all system deps for dbus are installed
-    - network-manager
 
-before_install:
-  - sudo service network-manager restart
 install:
   - pip install .
   - pip install coveralls 
