@@ -230,6 +230,61 @@ class NMHelperTests(unittest.TestCase):
         self.assertEqual(con, 3)
 
 
+    def test_availible_connections_no_aps(self):
+        wi_dev = mock.MagicMock(**{'GetAccessPoints.return_value': list()})
+        dev = mock.MagicMock(**{'SpecificDevice.return_value': wi_dev})
+
+        generator = nm_helper.availibleConnections(dev, list()) 
+        with self.assertRaises(StopIteration):
+            next(generator)
+
+    def test_availible_connections_no_connections(self):
+        ap = mock.MagicMock(**{'Ssid': 'Foo'})
+        wi_dev = mock.MagicMock(**{'GetAccessPoints.return_value': [ap]})
+        dev = mock.MagicMock(**{'SpecificDevice.return_value': wi_dev})
+
+        generator = nm_helper.availibleConnections(dev, list()) 
+        with self.assertRaises(StopIteration):
+            next(generator)
+
+    def test_availible_connections_no_matching_connections(self):
+        ap1 = mock.MagicMock(**{'Ssid': 'Foo'})
+        ap2 = mock.MagicMock(**{'Ssid': 'Bar'})
+        wi_dev = mock.MagicMock(**{'GetAccessPoints.return_value': [ap1, ap2]})
+        dev = mock.MagicMock(**{'SpecificDevice.return_value': wi_dev})
+        cons = [{'802-11-wireless': {'ssid' : 'Baz'}}, {'802-11-wireless': {'ssid' : 'Qux'}}]
+
+        generator = nm_helper.availibleConnections(dev, cons) 
+        with self.assertRaises(StopIteration):
+            next(generator)
+
+    def test_availible_connections_one_connection(self):
+        ap1 = mock.MagicMock(**{'Ssid': 'Foo'})
+        ap2 = mock.MagicMock(**{'Ssid': 'Bar'})
+        ap3 = mock.MagicMock(**{'Ssid': 'Baz'})
+        wi_dev = mock.MagicMock(**{'GetAccessPoints.return_value': [ap1, ap2, ap3]})
+        dev = mock.MagicMock(**{'SpecificDevice.return_value': wi_dev})
+        cons = [{'802-11-wireless': {'ssid' : 'Baz'}}, {'802-11-wireless': {'ssid' : 'Qux'}}]
+
+        generator = nm_helper.availibleConnections(dev, cons)
+        self.assertEqual((ap3, cons[0]), next(generator))
+        with self.assertRaises(StopIteration):
+            next(generator)
+
+    def test_availible_connections_multiple_connections(self):
+        ap1 = mock.MagicMock(**{'Ssid': 'Foo'})
+        ap2 = mock.MagicMock(**{'Ssid': 'Bar'})
+        ap3 = mock.MagicMock(**{'Ssid': 'Baz'})
+        wi_dev = mock.MagicMock(**{'GetAccessPoints.return_value': [ap1, ap2, ap3]})
+        dev = mock.MagicMock(**{'SpecificDevice.return_value': wi_dev})
+        cons = [{'802-11-wireless': {'ssid' : 'Baz'}}, {'802-11-wireless': {'ssid' : 'Foo'}}]
+
+        # Use list and assertIn beacuse we don't care about order
+        output = list(nm_helper.availibleConnections(dev, cons))
+        self.assertIn((ap3, cons[0]), output)
+        self.assertIn((ap1, cons[1]), output)
+        self.assertEqual(len(output), 2)
+
 
 def main():
     unittest.main()
