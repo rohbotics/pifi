@@ -5,6 +5,7 @@ import os, sys
 
 sys.modules['pifi.var_io'] = mock.MagicMock()
 sys.modules['pifi.nm_helper'] = mock.MagicMock()
+sys.modules['NetworkManager'] = mock.MagicMock()
 import pifi.pifi as pifi
 
 class NMHelperTests(unittest.TestCase):
