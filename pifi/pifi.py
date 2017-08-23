@@ -46,7 +46,7 @@ def status():
         print("ERROR: Network Manager reports no AP mode support on any managed device")
         exit(2)
 
-def add(ssid, password):
+def add(ssid, password, var_io=var_io):
     pending = var_io.readPendingConnections()
 
     if password is not None:
