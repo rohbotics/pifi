@@ -75,11 +75,14 @@ def main():
         print("No existing AP mode connections found")
         print("Creating new default AP mode connection")
 
+        mac_suffix = ApModeDevice.HwAddress.replace(":", "")[-4:]
+        print(mac_suffix)
+
         # Default AP mode connection
         # TODO: make this come from a config file
         settings = {
             'connection': {
-                'id': 'Hotspot',
+                'id': 'Pifi AP Mode',
                 'type': '802-11-wireless',
                 'autoconnect': False,
                 'uuid': str(uuid.uuid4())
@@ -88,7 +91,7 @@ def main():
             '802-11-wireless': {
                 'mode': 'ap',
                 'security': '802-11-wireless-security',
-                'ssid': 'UbiquityRobot'
+                'ssid': 'UbiquityRobot%4s' % mac_suffix
             },
 
             '802-11-wireless-security': {
