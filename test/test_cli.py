@@ -6,7 +6,7 @@ import os, sys
 sys.modules['NetworkManager'] = mock.MagicMock()
 import pifi.pifi as pifi
 
-class NMHelperTests(unittest.TestCase):
+class pifiCommandlineTests(unittest.TestCase):
 
     def test_add_one_insecure_connection_empty_list(self):
         var = mock.MagicMock()
