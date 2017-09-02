@@ -49,5 +49,5 @@ Note: Don't worry about dependencies if you are installing from debs, they will 
 
 This package depends on python3-networkmanager and python3-docopt.
 
-python3-networkmanager is not availible in the standard ubuntu repos, so you will have install it from `pip3 install python-networkmanager`, or use the debian package from https://packages.ubiquityrobotics.com/.
+python3-networkmanager is not availible in the standard ubuntu repos, so you will have install it from `pip3 install python-networkmanager`, or use the debian package from https://packages.ubiquityrobotics.com/. More info [here](debian/build-dependencies.md)
 
