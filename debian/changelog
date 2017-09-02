@@ -1,4 +1,11 @@
-pifi (0.2.3) UNRELEASED; urgency=medium
+pifi (0.3.0) UNRELEASED; urgency=medium
+
+  * Added unit tests, run them during debian builds
+  * Use last 4 digits of MAC in SSID
+
+ -- Rohan Agrawal <send2arohan@gmail.com>  Fri, 01 Sep 2017 20:34:24 -0700
+
+pifi (0.2.3) xenial; urgency=medium
 
   * Bugfix for bad optional argument handling 
 
