@@ -4,8 +4,8 @@ This module handles all of the pifi files in /etc
 For now this is just the default AP configuration
 """
 
-#default_ap_path = "/etc/pifi/default_ap.em"
-default_ap_path = "../default_ap.em"
+default_ap_path = "/etc/pifi/default_ap.em"
+#default_ap_path = "../default_ap.em"
 
 import os
 import em
