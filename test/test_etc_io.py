@@ -51,7 +51,9 @@ class EtcIOTests(unittest.TestCase):
         f = mock.mock_open(read_data=yaml.dump({'Foo' : 'Bar'}))
         conf = etc_io.get_conf(open=f)
         self.assertIsInstance(conf, dict)
-        self.assertEqual(conf, {'delete_existing_ap_connections' : False, 'Foo': 'Bar'})
+        expected = etc_io.default_conf
+        expected.update({'Foo': 'Bar'})
+        self.assertEqual(conf, expected)
 
     def test_empty_conf(self):
         f = mock.mock_open(read_data='')
