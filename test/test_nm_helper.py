@@ -475,6 +475,32 @@ class NMHelperTests(unittest.TestCase):
         with self.assertRaisesRegexp(AssertionError, 'not ap capable|not wireless'):
             nm_helper.select_devices(conf, NetworkManager=nm)
 
+    def test_select_devices_same_specified_not_found(self):
+        wi_dev = mock.MagicMock(**{'WirelessCapabilities' : 100})
+        dev1 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+        dev2 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+
+        byipiface = mock.MagicMock(side_effect=KeyError) # actual is dbus.exceptions.DBusException:
+        nm = mock.MagicMock(**{
+            'NetworkManager.GetDevices.return_value': [dev1, dev2],
+            'NetworkManager.GetDeviceByIpIface': byipiface,
+            'NM_DEVICE_TYPE_WIFI' : 2,
+            'NM_WIFI_DEVICE_CAP_AP' : 100
+        })
+
+        conf = {
+            'delete_existing_ap_connections' : False,
+            'ap_device' : 'any',
+            'client_device' : 'foo0'
+        }
+
+        with self.assertRaises(KeyError):
+            nm_helper.select_devices(conf, NetworkManager=nm)
+
 def main():
     unittest.main()
 
