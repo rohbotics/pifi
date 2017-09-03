@@ -9,6 +9,7 @@ import json
 
 import pifi.nm_helper as nm
 import pifi.var_io as var_io
+import pifi.etc_io as etc_io
 
 def main():
     # Expirimental dual wifi support
@@ -73,35 +74,11 @@ def main():
             return # We don't acutally want to loop, just use the first iter
 
         print("No existing AP mode connections found")
-        print("Creating new default AP mode connection")
-
-        mac_suffix = ApModeDevice.HwAddress.replace(":", "")[-4:]
-        print(mac_suffix)
+        print("Creating new default AP mode connection with config:")
 
         # Default AP mode connection
-        # TODO: make this come from a config file
-        settings = {
-            'connection': {
-                'id': 'Pifi AP Mode',
-                'type': '802-11-wireless',
-                'autoconnect': False,
-                'uuid': str(uuid.uuid4())
-            },
-
-            '802-11-wireless': {
-                'mode': 'ap',
-                'security': '802-11-wireless-security',
-                'ssid': 'UbiquityRobot%4s' % mac_suffix
-            },
-
-            '802-11-wireless-security': {
-                'key-mgmt': 'wpa-psk',
-                'psk': 'robotseverywhere'
-            },
-
-            'ipv4': {'method': 'shared'},
-            'ipv6': {'method': 'ignore'}
-        }
+        settings = etc_io.get_default_ap_conf(ApModeDevice.HwAddress)
+        print(json.dumps(settings, indent=1)) ## Pretty Print settings
 
         print("Initializing AP Mode")
         NetworkManager.NetworkManager.AddAndActivateConnection(settings, ApModeDevice, "/")
