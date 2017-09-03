@@ -12,7 +12,7 @@ setup(
 
     packages=find_packages(exclude=['test']),    
 
-    install_requires=['python-networkmanager', 'docopt', 'empy'],
+    install_requires=['python-networkmanager', 'docopt', 'empy', 'pyyaml'],
 
     entry_points={
         'console_scripts': [
