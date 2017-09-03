@@ -191,7 +191,7 @@ class NMHelperTests(unittest.TestCase):
             next(generator)
 
     def test_select_connection_none_availible(self):
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             nm_helper.selectConnection(list())
 
     def test_select_connection_one_availible(self):

@@ -61,7 +61,7 @@ def selectConnection(availible_connections):
     if best is not None:
         return best
     else:
-        raise RuntimeError("No connections in availible_connections could be found")
+        raise ValueError("No connections in availible_connections could be found")
 
 def existingAPConnections(NetworkManager=NetworkManager):
     for connection in NetworkManager.Settings.ListConnections():

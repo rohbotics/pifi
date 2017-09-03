@@ -39,7 +39,7 @@ def main():
     var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
  
     # Allow 30 seconds for network manager to sort itself out
-    # time.sleep(30)
+    time.sleep(30)
 
     if (ClientModeDevice.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED):
         print("Client Device currently connected to: %s" 
@@ -49,12 +49,11 @@ def main():
         print("Device is not connected to any network, Looking for pending connections")
 
         pending = var_io.readPendingConnections()
-        # We can't use the generator directly because we want len, so we use list()
-        availible_connections = list(nm.availibleConnections(ClientModeDevice, pending))
 
-        if len(availible_connections) >= 1:
+        # Try to pick a connection to use, if none found, just continue
+        try:
             # Use the best connection
-            best_ap, best_con = nm.selectConnection(availible_connections)
+            best_ap, best_con = nm.selectConnection(nm.availibleConnections(ClientModeDevice, pending))
 
             print("Connecting to %s" % best_con['802-11-wireless']['ssid'])
             NetworkManager.NetworkManager.AddAndActivateConnection(best_con, ClientModeDevice, best_ap)
@@ -62,6 +61,8 @@ def main():
             new_pending = var_io.readPendingConnections().remove(best_con)
             var_io.writePendingConnections(new_pending)
             return
+        except ValueError:
+            pass
 		
         # If we reach this point, we gave up on Client mode
         print("No SSIDs from pending connections found, Starting AP mode")
