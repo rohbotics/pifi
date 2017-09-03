@@ -24,13 +24,12 @@ import pifi.var_io as var_io
 
 import uuid
 
-def status():
-    ApModeDevice = NetworkManager.Device
+def status(exit=exit, nm=nm):
+    devices = 0
 
-    for device in nm.managedAPCapableDevices():
-        wi_device = device.SpecificDevice()
-        print("Network Mangager reports AP mode support on %s" % wi_device.HwAddress)
-        ApModeDevice = device
+    for ApModeDevice in nm.managedAPCapableDevices():
+        devices += 1
+        print("Network Mangager reports AP mode support on %s" % ApModeDevice.Interface)
         if ApModeDevice.State != 100:
             print("Device is not activated")
             exit(0)
@@ -42,7 +41,7 @@ def status():
             ssid = bytearray([ord(byte) for byte in ssid])
             print("Device is connected to %s" % ssid.decode("utf-8"))
 
-    if (ApModeDevice == NetworkManager.Device):
+    if (devices == 0):
         print("ERROR: Network Manager reports no AP mode support on any managed device")
         exit(2)
 

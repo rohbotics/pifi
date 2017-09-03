@@ -112,6 +112,14 @@ class pifiCommandlineTests(unittest.TestCase):
         
         self.assertEqual(written_connections, [existing_connection, expected_connection])
 
+    def test_status_no_devices_exit(self):
+        managedAPCapableDevices = mock.MagicMock(side_effect=StopIteration)
+        nm_mock = mock.MagicMock(**{'managedAPCapableDevices()' : managedAPCapableDevices})
+        exit_mock = mock.MagicMock()
+
+        pifi.status(exit=exit_mock, nm=nm_mock)
+        exit_mock.assert_called_once_with(2)
+
 
 def main():
     unittest.main()
