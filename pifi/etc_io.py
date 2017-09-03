@@ -10,10 +10,14 @@ conf_path = "/etc/pifi/pifi.conf"
 default_ap_path = "../default_ap.em"
 conf_path = "../pifi.conf"
 
-import os
+import os, sys
 import em
 import json, yaml
 import uuid
+
+JSONDecodeError = ValueError
+if sys.version_info[0] >= 3.5:
+    JSONDecodeError = json.decoder.JSONDecodeError
 
 def get_default_ap_conf(mac, open=open):
     fallback_ap_conf = \
@@ -48,7 +52,7 @@ def get_default_ap_conf(mac, open=open):
     except FileNotFoundError:
         print("WARN /etc/pifi/default_ap.em doesn't exist, using fallback configuration")
         return fallback_ap_conf
-    except (json.decoder.JSONDecodeError, NameError) as e:
+    except (JSONDecodeError, NameError) as e:
         print("WARN failed to parse /etc/pifi/default_ap.em, using fallback configuration")
         print(e)
         return fallback_ap_conf
