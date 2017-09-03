@@ -285,6 +285,195 @@ class NMHelperTests(unittest.TestCase):
         self.assertIn((ap1, cons[1]), output)
         self.assertEqual(len(output), 2)
 
+    def test_select_devices_no_devices(self):
+        nm = mock.MagicMock(**{'NetworkManager.GetDevices.return_value': list()})
+
+        conf = {
+            'delete_existing_ap_connections' : False,
+            'ap_device' : 'foo',
+            'client_device' : 'foo'
+        }
+
+        with self.assertRaises(RuntimeError):
+            nm_helper.select_devices(conf, NetworkManager=nm)
+
+    def test_select_devices_same_specified_device_one_total(self):
+        wi_dev = mock.MagicMock(**{'WirelessCapabilities' : 100})
+        dev = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+
+        nm = mock.MagicMock(**{
+            'NetworkManager.GetDevices.return_value': [dev],
+            'NetworkManager.GetDeviceByIpIface.return_value': dev,
+            'NM_DEVICE_TYPE_WIFI' : 2,
+            'NM_WIFI_DEVICE_CAP_AP' : 100
+        })
+
+        conf = {
+            'delete_existing_ap_connections' : False,
+            'ap_device' : 'foo',
+            'client_device' : 'foo'
+        }
+
+        ap, client = nm_helper.select_devices(conf, NetworkManager=nm)
+
+        self.assertIs(ap, dev)
+        self.assertIs(client, dev)
+
+    def test_select_devices_same_specified_device_multiple_total(self):
+        wi_dev = mock.MagicMock(**{'WirelessCapabilities' : 100})
+        dev1 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+        dev2 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+
+        nm = mock.MagicMock(**{
+            'NetworkManager.GetDevices.return_value': [dev1, dev2],
+            'NetworkManager.GetDeviceByIpIface.return_value': dev1,
+            'NM_DEVICE_TYPE_WIFI' : 2,
+            'NM_WIFI_DEVICE_CAP_AP' : 100
+        })
+
+        conf = {
+            'delete_existing_ap_connections' : False,
+            'ap_device' : 'foo0',
+            'client_device' : 'foo0'
+        }
+
+        ap, client = nm_helper.select_devices(conf, NetworkManager=nm)
+
+        self.assertIs(ap, dev1)
+        self.assertIs(client, dev1)
+
+    def test_select_devices_ap_specified_device_one_total(self):
+        wi_dev = mock.MagicMock(**{'WirelessCapabilities' : 100})
+        dev1 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+        nm = mock.MagicMock(**{
+            'NetworkManager.GetDevices.return_value': [dev1],
+            'NetworkManager.GetDeviceByIpIface.return_value': dev1,
+            'NM_DEVICE_TYPE_WIFI' : 2,
+            'NM_WIFI_DEVICE_CAP_AP' : 100
+        })
+
+        conf = {
+            'delete_existing_ap_connections' : False,
+            'ap_device' : 'foo0',
+            'client_device' : 'any'
+        }
+
+        ap, client = nm_helper.select_devices(conf, NetworkManager=nm)
+
+        self.assertIs(ap, dev1)
+        self.assertIs(client, dev1)
+
+    def test_select_devices_ap_specified_device_multiple_total(self):
+        wi_dev = mock.MagicMock(**{'WirelessCapabilities' : 100})
+        dev1 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+        dev2 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+        nm = mock.MagicMock(**{
+            'NetworkManager.GetDevices.return_value': [dev1, dev2],
+            'NetworkManager.GetDeviceByIpIface.return_value': dev1,
+            'NM_DEVICE_TYPE_WIFI' : 2,
+            'NM_WIFI_DEVICE_CAP_AP' : 100
+        })
+
+        conf = {
+            'delete_existing_ap_connections' : False,
+            'ap_device' : 'foo0',
+            'client_device' : 'any'
+        }
+
+        ap, client = nm_helper.select_devices(conf, NetworkManager=nm)
+
+        self.assertIs(ap, dev1)
+        self.assertIs(client, dev2)
+
+    def test_select_devices_client_specified_device_multiple_total(self):
+        wi_dev = mock.MagicMock(**{'WirelessCapabilities' : 100})
+        dev1 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+        dev2 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+
+        byipiface = mock.MagicMock(**{'return_value' : dev1})
+        nm = mock.MagicMock(**{
+            'NetworkManager.GetDevices.return_value': [dev1, dev2],
+            'NetworkManager.GetDeviceByIpIface': byipiface,
+            'NM_DEVICE_TYPE_WIFI' : 2,
+            'NM_WIFI_DEVICE_CAP_AP' : 100
+        })
+
+        conf = {
+            'delete_existing_ap_connections' : False,
+            'ap_device' : 'any',
+            'client_device' : 'foo0'
+        }
+
+        ap, client = nm_helper.select_devices(conf, NetworkManager=nm)
+
+        self.assertIs(ap, dev2)
+        self.assertIs(client, dev1)
+
+    def test_select_devices_same_specified_not_ap(self):
+        wi_dev = mock.MagicMock(**{'WirelessCapabilities' : 0})
+        dev1 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+        dev2 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+
+        nm = mock.MagicMock(**{
+            'NetworkManager.GetDevices.return_value': [dev1, dev2],
+            'NetworkManager.GetDeviceByIpIface.return_value': dev1,
+            'NM_DEVICE_TYPE_WIFI' : 2,
+            'NM_WIFI_DEVICE_CAP_AP' : 100
+        })
+
+        conf = {
+            'delete_existing_ap_connections' : False,
+            'ap_device' : 'foo0',
+            'client_device' : 'foo0'
+        }
+
+        with self.assertRaisesRegexp(AssertionError, 'not ap capable'):
+            nm_helper.select_devices(conf, NetworkManager=nm)
+
+    def test_select_devices_same_specified_not_wireless(self):
+        wi_dev = mock.MagicMock(**{'WirelessCapabilities' : 0})
+        dev1 = mock.MagicMock(**{'DeviceType' : 0,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+        dev2 = mock.MagicMock(**{'DeviceType' : 2,
+                               'SpecificDevice.return_value': wi_dev
+                             })
+
+        nm = mock.MagicMock(**{
+            'NetworkManager.GetDevices.return_value': [dev1, dev2],
+            'NetworkManager.GetDeviceByIpIface.return_value': dev1,
+            'NM_DEVICE_TYPE_WIFI' : 2,
+            'NM_WIFI_DEVICE_CAP_AP' : 100
+        })
+
+        conf = {
+            'delete_existing_ap_connections' : False,
+            'ap_device' : 'foo0',
+            'client_device' : 'foo0'
+        }
+
+        with self.assertRaisesRegexp(AssertionError, 'not ap capable|not wireless'):
+            nm_helper.select_devices(conf, NetworkManager=nm)
 
 def main():
     unittest.main()

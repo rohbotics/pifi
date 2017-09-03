@@ -14,25 +14,16 @@ import pifi.etc_io as etc_io
 def main():
     pifi_conf_settings = etc_io.get_conf()
 
-    # Expirimental dual wifi support
-    ApModeDevice = NetworkManager.Device # Device used for AP mode
-    ClientModeDevice = NetworkManager.Device # Device for connecting out
+    ApModeDevice, ClientModeDevice = nm.select_devices(pifi_conf_settings)
 
-    for device in nm.managedAPCapableDevices():
-        print("Using %s for AP mode support" % device.Interface)
-        ApModeDevice = device
-        break # Use first device for now
+    print("Using %s for AP mode support" % ApModeDevice.Interface)
+    print("Using %s for wifi client mode" % ClientModeDevice.Interface)
 
-    if (ApModeDevice == NetworkManager.Device):
+    if (ApModeDevice is None):
         print("ERROR: Could not get a AP capable device from NetworkManager")
         exit(2)
 
-    for device in nm.managedWifiDevices():
-        print("Using %s for wifi client mode" % device.Interface)
-        ClientModeDevice = device
-        break # Use first device for now
-
-    if (ClientModeDevice == NetworkManager.Device):
+    if (ClientModeDevice is None):
         print("ERROR: Could not get a wifi client device to use from NetworkManager")
         exit(2)
 
