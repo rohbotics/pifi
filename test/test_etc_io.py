@@ -4,7 +4,7 @@ import pifi.etc_io as etc_io
 import os
 import json
 
-class PifiEtcIOTests(unittest.TestCase):
+class EtcIOTests(unittest.TestCase):
 
     def test_nonexistant_get_default_ap_conf(self):
         f = mock.Mock(side_effect=FileNotFoundError('foo'))
