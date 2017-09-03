@@ -19,14 +19,6 @@ def main():
     print("Using %s for AP mode support" % ApModeDevice.Interface)
     print("Using %s for wifi client mode" % ClientModeDevice.Interface)
 
-    if (ApModeDevice is None):
-        print("ERROR: Could not get a AP capable device from NetworkManager")
-        exit(2)
-
-    if (ClientModeDevice is None):
-        print("ERROR: Could not get a wifi client device to use from NetworkManager")
-        exit(2)
-
     var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
  
     # Allow 30 seconds for network manager to sort itself out
