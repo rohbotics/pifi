@@ -12,6 +12,8 @@ import pifi.var_io as var_io
 import pifi.etc_io as etc_io
 
 def main():
+    pifi_conf_settings = etc_io.get_conf()
+
     # Expirimental dual wifi support
     ApModeDevice = NetworkManager.Device # Device used for AP mode
     ClientModeDevice = NetworkManager.Device # Device for connecting out
@@ -37,7 +39,7 @@ def main():
     var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
  
     # Allow 30 seconds for network manager to sort itself out
-    time.sleep(30)
+    # time.sleep(30)
 
     if (ClientModeDevice.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED):
         print("Client Device currently connected to: %s" 
@@ -64,14 +66,20 @@ def main():
         # If we reach this point, we gave up on Client mode
         print("No SSIDs from pending connections found, Starting AP mode")
 
-        print("Looking for existing AP mode connection")
+        if pifi_conf_settings['delete_existing_ap_connections'] == False:
+            print("Looking for existing AP mode connection")
 
-        for connection in nm.existingAPConnections():
-            print("Found existing AP mode connection, SSID: %s" % 
-                connection.GetSettings()['802-11-wireless']['ssid'])
-            print("Initializing AP Mode")
-            NetworkManager.NetworkManager.ActivateConnection(connection, ApModeDevice, "/")
-            return # We don't acutally want to loop, just use the first iter
+            for connection in nm.existingAPConnections():
+                print("Found existing AP mode connection, SSID: %s" % 
+                    connection.GetSettings()['802-11-wireless']['ssid'])
+                print("Initializing AP Mode")
+                NetworkManager.NetworkManager.ActivateConnection(connection, ApModeDevice, "/")
+                return # We don't acutally want to loop, just use the first iter
+        else:
+            for connection in nm.existingAPConnections():
+                print("Deleting existing AP mode connection, SSID: %s" % 
+                    connection.GetSettings()['802-11-wireless']['ssid'])
+                connection.Delete()
 
         print("No existing AP mode connections found")
         print("Creating new default AP mode connection with config:")

@@ -7,8 +7,8 @@ For now this is just the default AP configuration
 default_ap_path = "/etc/pifi/default_ap.em"
 conf_path = "/etc/pifi/pifi.conf"
 
-default_ap_path = "../default_ap.em"
-conf_path = "../pifi.conf"
+# default_ap_path = "../default_ap.em"
+# conf_path = "../pifi.conf"
 
 import os, sys
 import em
