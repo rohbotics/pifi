@@ -1,1 +1,2 @@
 pifi-NetworkManager.pkla /var/lib/polkit-1/localauthority/50-local.d/
+default_ap.em /etc/pifi/

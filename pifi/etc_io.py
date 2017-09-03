@@ -30,7 +30,7 @@ def get_default_ap_conf(mac, open=open):
             '802-11-wireless': {
                 'mode': 'ap',
                 'security': '802-11-wireless-security',
-                'ssid': 'pifiAP_%4s' % mac.replace(":", "")[-4:]
+                'ssid': 'UbiquityRobot%4s' % mac.replace(":", "")[-4:]
             },
 
             '802-11-wireless-security': {
