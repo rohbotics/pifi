@@ -10,27 +10,42 @@ import NetworkManager
 def checkCapablities(device_capabilities, capability):
     return device_capabilities & capability == capability
 
+
+def is_wireless_device(device, NetworkManager=NetworkManager):
+    return (device.DeviceType == NetworkManager.NM_DEVICE_TYPE_WIFI)
+
+def is_ap_capable(device, NetworkManager=NetworkManager):
+    wi_device = device.SpecificDevice()
+    supports_ap = checkCapablities(wi_device.WirelessCapabilities,
+        NetworkManager.NM_WIFI_DEVICE_CAP_AP)
+    return supports_ap
+
+def get_device_by_name(name, NetworkManager=NetworkManager):
+    """
+    Get device my the interface name.
+
+    Does not yeild 'specific devices' call SpecificDevice() to get one.
+    """
+    return NetworkManager.NetworkManager.GetDeviceByIpIface()
+
 def managedWifiDevices(NetworkManager=NetworkManager):
     """
     Generator that yields Wifi devices managed by NetworkManager.
 
-    Does not return 'specific devices' call SpecificDevice() to get one.
+    Does not yeild 'specific devices' call SpecificDevice() to get one.
     """
     for device in NetworkManager.NetworkManager.GetDevices():
-        if device.DeviceType == NetworkManager.NM_DEVICE_TYPE_WIFI:
+        if is_wireless_device(device, NetworkManager=NetworkManager):
             yield device
 
 def managedAPCapableDevices(NetworkManager=NetworkManager):
     """
     Generator that yields AP capable Wifi devices managed by NetworkManager.
 
-    Does not return 'specific devices' call SpecificDevice() to get one.
+    Does not yeild 'specific devices' call SpecificDevice() to get one.
     """
     for device in managedWifiDevices(NetworkManager=NetworkManager):
-        wi_device = device.SpecificDevice()
-        supports_ap = checkCapablities(wi_device.WirelessCapabilities,
-            NetworkManager.NM_WIFI_DEVICE_CAP_AP)
-        if (supports_ap == True):
+        if is_ap_capable(device, NetworkManager=NetworkManager):
             yield device
 
 def seenSSIDs(devices):
