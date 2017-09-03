@@ -24,7 +24,7 @@ import pifi.var_io as var_io
 
 import uuid
 
-def status(exit=exit, nm=nm):
+def status(nm=nm):
     devices = 0
 
     for ApModeDevice in nm.managedAPCapableDevices():

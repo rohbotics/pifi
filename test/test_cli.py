@@ -115,10 +115,34 @@ class pifiCommandlineTests(unittest.TestCase):
     def test_status_no_devices_exit(self):
         managedAPCapableDevices = mock.MagicMock(side_effect=StopIteration)
         nm_mock = mock.MagicMock(**{'managedAPCapableDevices()' : managedAPCapableDevices})
-        exit_mock = mock.MagicMock()
 
-        pifi.status(exit=exit_mock, nm=nm_mock)
-        exit_mock.assert_called_once_with(2)
+        with self.assertRaises(SystemExit) as cm:
+            pifi.status(nm=nm_mock)
+
+        self.assertEqual(cm.exception.code, 2)
+
+    def test_status_inactive_device(self):
+        dev1 = mock.MagicMock(**{'Interface' : 'Foo', 'State' : 0})
+        managedAPCapableDevices = mock.MagicMock(**{'return_value' : [dev1]})
+        nm_mock = mock.MagicMock(**{'managedAPCapableDevices' : managedAPCapableDevices})
+
+        with self.assertRaises(SystemExit) as cm:
+            pifi.status(nm=nm_mock)
+
+        self.assertEqual(cm.exception.code, 0)
+
+    def test_ap_active_device(self):
+        current_connection = [{'802-11-wireless' : {'mode' : 'ap'}}]
+        dev1 = mock.MagicMock(**{'Interface' : 'Foo', 'State' : 0, 
+                                'GetAppliedConnection.return_value': current_connection})
+
+        managedAPCapableDevices = mock.MagicMock(**{'return_value' : [dev1]})
+        nm_mock = mock.MagicMock(**{'managedAPCapableDevices' : managedAPCapableDevices})
+
+        with self.assertRaises(SystemExit) as cm:
+            pifi.status(nm=nm_mock)
+
+        self.assertEqual(cm.exception.code, 0)
 
 
 def main():
