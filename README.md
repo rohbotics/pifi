@@ -9,7 +9,7 @@ Pifi uses NetworkManager to do the heavy lifting under the hood.
 The command line tool is `pifi`:
 ```
 Usage:
-  pifi status                 Shows if the robot is in AP mode or connected to a network
+  pifi status                 Shows if the device is in AP mode or connected to a network
   pifi add <ssid> <password>  Adds a connection to scan/connect to on bootup (needs sudo)
   pifi list seen              Lists the SSIDs that see seen during bootup
   pifi list pending           Lists the SSIDs that still need to configured in NetworkManager
@@ -20,8 +20,8 @@ Options:
   --version    Show pifi version
 ```
 
-Pifi runs a script at boot up that does the following:
-* Determine if there is Wifi device capable of access point mode
+Pifi runs a script at boot up that does the following by default:
+* Determine if there is wifi device capable of access point mode
 * Scan for visible access points, and save the SSIDs to `/var/lib/pifi/seen_ssids`
 * Go through any pending connections in `/var/lib/pifi/pending`, and see if any are visiable
 * If any of the pending connections are visible, connect to them, and remove them from pending
@@ -31,11 +31,11 @@ Pifi runs a script at boot up that does the following:
 ## Connecting to a network while in AP mode
 Connect to the ap mode wifi (default UbiquityRobot<4HEX>, password robotseverywhere) on your laptop. (Where <4HEX> is the last 4 digits of the device mac address.)
 
-SSH into the robot with `ssh ubuntu@10.42.0.1`. 
+SSH into the device with `ssh ubuntu@10.42.0.1`. 
 
-Once logged into the robot, run `sudo pifi add WIFI_SSID PASSWORD`, and reboot `sudo reboot`.
+Once logged into the device, run `sudo pifi add WIFI_SSID PASSWORD`, and reboot `sudo reboot`.
 
-Your robot should now be connected to your network.  
+Your device should now be connected to your network.  
 
 ## Installation
 The recommended way to install is from debs. The apt source at https://packages.ubiquityrobotics.com/ has the packages.
@@ -47,7 +47,7 @@ To install from source, run `sudo pip3 install .` in the pifi directory after cl
 ## Dependencies
 Note: Don't worry about dependencies if you are installing from debs, they will be installed automatically.
 
-This package depends on python3-networkmanager and python3-docopt.
+This package depends on python3-networkmanager, python3-docopt, python3-empy, and python3-yaml.
 
 python3-networkmanager is not availible in the standard ubuntu/debian repos, so you will have install it from `pip3 install python-networkmanager`, or use the debian package from https://packages.ubiquityrobotics.com/. More info [here](debian/build-dependencies.md)
 
@@ -116,3 +116,4 @@ This is the default configuration:
 Empy uses the template format `@()` with python expressions inside of the parenthesis.
 
 The `mac.replace(":", "")[-4:]` gets the last 4 digits of the MAC address after removing colons.
+

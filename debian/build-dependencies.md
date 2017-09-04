@@ -1,4 +1,4 @@
-This package depends on debhelper, dh-python, dh-systemd, python3-all, python3-networkmanager, python3-docopt.
+This package depends on debhelper, dh-python, dh-systemd, python3-all, python3-networkmanager, python3-docopt, python3-empy, and python3-yaml.
 
 All of these packages, except for python3-networkmanager are availible in the standard ubuntu xenial repositories. It is avalible from pip with `pip3 install python-networkmanager` and from https://packages.ubiquityrobotics.com/. The latter is a debian package built with the following method.
 

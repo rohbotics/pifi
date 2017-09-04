@@ -116,7 +116,7 @@ def select_devices(pifi_conf, NetworkManager=NetworkManager):
         assert is_wireless_device(client_device, NetworkManager=NetworkManager), \
             "Specified client_device %s is not wireless" % pifi_conf['client_device']
 
-    # If ap_device can be any, use the first one
+    # If ap_device can be any, use the first one that isn't the same as client_device
     if pifi_conf['ap_device'] == 'any':
         for device in managedAPCapableDevices(NetworkManager=NetworkManager):
             ap_device = device
@@ -125,7 +125,7 @@ def select_devices(pifi_conf, NetworkManager=NetworkManager):
             else:
                 break
 
-    # If ap_device can be any, use the first one that isn't the same as ap_device
+    # If client_device can be any, use the first one that isn't the same as ap_device
     # If all are the same, use ay of them
     if pifi_conf['client_device'] == 'any':
         for device in devices:
