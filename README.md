@@ -1,5 +1,5 @@
 # pifi
-Wifi provisioning tools for robots with Raspberry Pis.
+A headless wifi provisioning system.
 
 [![Build Status](https://travis-ci.org/rohbotics/pifi.svg?branch=master)](https://travis-ci.org/rohbotics/pifi)
 [![Coverage Status](https://coveralls.io/repos/github/rohbotics/pifi/badge.svg?branch=master)](https://coveralls.io/github/rohbotics/pifi?branch=master)
@@ -37,20 +37,37 @@ Once logged into the robot, run `sudo pifi add WIFI_SSID PASSWORD`, and reboot `
 
 Your robot should now be connected to your network.  
 
-## Installation
-The recommended way to install is from debs. The apt source at https://packages.ubiquityrobotics.com/ has the packages.
-
-If that source is configured on your system, simply run `sudo apt install pifi`.
-
-To install from source, run `sudo python3 setup.py install` in the pifi directory after cloning the repo.
-
 ## Configuration
-The settings of the default AP that pifi creates are configurable. `/etc/pifi/default_ap.em` contains and empy template of the json that represents the connection settings.
+The main configuration file is a YAML file at `/etc/pifi/pifi.conf`.
+
+The default configuration file is:
+```yaml
+# YAML configuration file for pifi
+
+# Should pifi delete other ap mode configurations in NetworkManager?
+# Default: False
+# If true, during the next boot where there are no networks availble 
+# pifi will delete existing connections, and create a new default one
+delete_existing_ap_connections: False
+
+# The network interface to use for AP mode
+# Default: any
+# If set to any pifi will pick one automatically
+ap_device: any
+
+# The network interface to use for connecting out
+# Default: any
+# If set to any pifi will pick one automatically
+client_device: any
+```
+
+
+The settings of the default AP that pifi creates are also configurable. `/etc/pifi/default_ap.em` contains and empy template of the json that represents the connection settings.
 
 The varibles passed into the template are the MAC address of the device (mac), and a newly generated UUIDv4 (uuid_str).
 
 This is the default configuration:
-```
+```json
 {
     "connection": {
         "id": "Pifi AP Mode",
@@ -82,6 +99,13 @@ This is the default configuration:
 Empy uses the template format `@()` with python expressions inside of the parenthesis.
 
 The `mac.replace(":", "")[-4:]` gets the last 4 digits of the MAC address after removing colons.
+
+## Installation
+The recommended way to install is from debs. The apt source at https://packages.ubiquityrobotics.com/ has the packages.
+
+If that source is configured on your system, simply run `sudo apt install pifi`.
+
+To install from source, run `sudo pip3 install .` in the pifi directory after cloning this repo.
 
 ## Dependencies
 Note: Don't worry about dependencies if you are installing from debs, they will be installed automatically.
