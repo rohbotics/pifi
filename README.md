@@ -117,3 +117,60 @@ Empy uses the template format `@()` with python expressions inside of the parent
 
 The `mac.replace(":", "")[-4:]` gets the last 4 digits of the MAC address after removing colons.
 
+## Interfacing
+Your code can interface with pifi via the files in `/var`.
+
+`/var/lib/pifi/pending` is a JSON file that contains a list of wifi connections that should be activated. The connections should be JSON serializations of the NetworkManager connection configuration. 
+
+Example contents of `/var/lib/pifi/pending`:
+```
+[
+  {
+    "ipv4": {
+      "method": "auto"
+    },
+    "802-11-wireless-security": {
+      "key-mgmt": "wpa-psk",
+      "psk": "supersecurepassword"
+    },
+    "connection": {
+      "type": "802-11-wireless",
+      "autoconnect": true,
+      "id": "wifi",
+      "uuid": "ce17378f-b187-48ab-af93-48613e88a5e5"
+    },
+    "802-11-wireless": {
+      "mode": "infrastructure",
+      "ssid": "wifi",
+      "security": "802-11-wireless-security"
+    },
+    "ipv6": {
+      "method": "auto"
+    }
+  }
+]
+```
+
+`/var/lib/pifi/seen_ssids` is a plain text file with the list of SSIDs seen when pifi was starting up, as many cards can't scan once they start AP mode.
+
+Example contents of file:
+```
+xfinitywifi
+xfinitywifi
+xfinitywifi
+Aleopile
+Jhuangdds
+Requilme-CA2
+Linksys New
+xfinitywifi
+Aleopile
+Jhuangdds
+Requilme-CA2
+ATT9C8eh3A
+HOME-616E-2.4
+HOME-99EB
+linksys
+xfinitywifi
+```
+
+Notice that the SSIDs can be duplicated (there will be one entry per AP).
