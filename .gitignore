@@ -1,3 +1,5 @@
 build
 dist
 pifi.egg*
+*__pycache__*
+.coverage
