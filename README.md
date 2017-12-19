@@ -13,7 +13,7 @@ Usage:
   pifi add <ssid> <password>  Adds a connection to scan/connect to on bootup (needs sudo)
   pifi list seen              Lists the SSIDs that see seen during bootup
   pifi list pending           Lists the SSIDs that still need to configured in NetworkManager
-  pifi set-hostname <hostname> Set the hostname of the system, also changes the default AP mode ssid
+  pifi set-hostname <hostname> Set the hostname of the system, also deletes existing AP mode configurations
   pifi --version              Prints the version of pifi on your system
 
 Options:

@@ -24,7 +24,11 @@ if sys.version_info[0] >= 3.5:
     JSONDecodeError = json.decoder.JSONDecodeError
 
 def get_default_ap_conf(mac, open=open):
-    hostname = get_hostname(open=open)
+    hostname = "pifi" # Default value
+    try:
+        hostname = get_hostname(open=open)
+    except Exception as e:
+        pass
     fallback_ap_conf = \
     {
         'connection': {
