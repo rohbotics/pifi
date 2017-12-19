@@ -9,7 +9,7 @@
     "802-11-wireless": {
         "mode": "ap",
         "security": "802-11-wireless-security",
-        "ssid": "UbiquityRobot@(mac.replace(":", "")[-4:])"
+        "ssid": "@(hostname)@(mac.replace(":", "")[-4:])"
     },
 
     "802-11-wireless-security": {

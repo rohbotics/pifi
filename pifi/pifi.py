@@ -6,6 +6,7 @@ Usage:
   pifi add <ssid> [<password>]
   pifi list seen
   pifi list pending
+  pifi set-hostname <hostname>
   pifi --version
 
 Options:
@@ -21,6 +22,7 @@ import os
 
 import pifi.nm_helper as nm
 import pifi.var_io as var_io
+import pifi.etc_io as etc_io
 
 import uuid
 
@@ -110,6 +112,16 @@ def list_pending():
             print("WARN: Found non wireless pending connection: %s" % 
                     con['connection']['id'])
 
+
+def set_hostname(new_hostname):
+    old_hostname = etc_io.get_hostname()
+    print("Changing hostname from %s to %s" % (old_hostname, new_hostname))
+
+    try:
+        etc_io.set_hostname(old_hostname, new_hostname)
+    except PermissionError:
+        print("Error writing to /etc/hosts or /etc/hostname, make sure you are running with sudo")
+
 def main():
     arguments = docopt(__doc__, version='pifi version 0.3.0')
     
@@ -124,3 +136,5 @@ def main():
         list_seen()
     if arguments['list'] and arguments['pending']:
         list_pending()
+    if arguments['set-hostname']:
+        set_hostname(arguments['<hostname>'])
