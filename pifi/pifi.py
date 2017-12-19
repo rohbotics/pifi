@@ -119,12 +119,6 @@ def set_hostname(new_hostname):
 
     try:
         etc_io.set_hostname(old_hostname, new_hostname)
-
-        print("Deleting existing AP mode configurations")
-        for connection in nm.existingAPConnections():
-            print("Deleting existing AP mode connection, SSID: %s" % 
-                connection.GetSettings()['802-11-wireless']['ssid'])
-            connection.Delete()
     except PermissionError:
         print("Error writing to /etc/hosts or /etc/hostname, make sure you are running with sudo")
 

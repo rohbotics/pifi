@@ -74,7 +74,7 @@ def get_default_ap_conf(mac, open=open):
 
 default_conf = \
 {
-    'delete_existing_ap_connections' : False,
+    'delete_existing_ap_connections' : True,
     'ap_device' : 'any',
     'client_device' : 'any'
 }
