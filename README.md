@@ -27,10 +27,10 @@ Pifi runs a script at boot up that does the following by default:
 * Go through any pending connections in `/var/lib/pifi/pending`, and see if any are visiable
 * If any of the pending connections are visible, connect to them, and remove them from pending
 * Otherwise look for an existing AP mode definiton and start it
-* If there is no existing AP mode definition create one with the configuration in `/etc/pifi/default_ap.em` (SSID:`<HOSTNAME><4HEX>` and password:'robotseverywhere'). (Where <HOSTNAME> is the hostname of the system and <4HEX> is the last 4 digits of the device mac address.)
+* If there is no existing AP mode definition create one with the configuration in `/etc/pifi/default_ap.em` (SSID:`<HOSTNAME><4HEX>`   and password:'robotseverywhere'). (Where `<HOSTNAME>` is the hostname of the system and `<4HEX>` is the last 4 digits of the device mac address.)
 
 ## Connecting to a network while in AP mode
-Connect to the ap mode wifi (default `<HOSTNAME><4HEX>`, password robotseverywhere) on your laptop. (Where <HOSTNAME> is the hostname of the system and <4HEX> is the last 4 digits of the device mac address.)
+Connect to the ap mode wifi (default `<HOSTNAME><4HEX>`, password robotseverywhere) on your laptop. (Where `<HOSTNAME>` is the hostname of the system and `<4HEX>` is the last 4 digits of the device mac address.)
 
 SSH into the device with `ssh ubuntu@10.42.0.1`. 
 
