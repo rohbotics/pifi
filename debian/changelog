@@ -1,3 +1,9 @@
+pifi (0.4.1) xenial; urgency=medium
+
+  * Quick test 
+
+ -- Rohan Agrawal <rohan@aleopile.com>  Thu, 21 Dec 2017 22:29:52 -0800
+
 pifi (0.4.0) xenial; urgency=medium
 
   * Added ability to set the system hostname 
