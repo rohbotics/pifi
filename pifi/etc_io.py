@@ -10,8 +10,8 @@ conf_path = "/etc/pifi/pifi.conf"
 hostname_path = "/etc/hostname"
 hosts_path = "/etc/hosts"
 
-default_ap_path = "../default_ap.em"
-conf_path = "../pifi.conf"
+#default_ap_path = "../default_ap.em"
+#conf_path = "../pifi.conf"
 
 import os, sys
 import em
