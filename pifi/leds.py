@@ -10,6 +10,7 @@ def blink(led_paths, delay_on=500, delay_off=500, open=open):
     delay_on is how many milliseconds the led should be on in a cycle
     delay_on is how many milliseconds the led should be off in a cycle
     """
+    if led_paths is None: return
     if type(led_paths) is not tuple: led_paths = [led_paths]
 
     # Some basic sanity checks
@@ -33,6 +34,7 @@ def off(led_paths, open=open):
 
     led_paths should be a string path or a tuple of string paths
     """
+    if led_paths is None: return
     if type(led_paths) is not tuple: led_paths = [led_paths]
 
     for led_path in led_paths:
@@ -48,6 +50,7 @@ def on(led_paths, open=open):
 
     led_paths should be a string path or a tuple of string paths
     """
+    if led_paths is None: return
     if type(led_paths) is not tuple: led_paths = [led_paths]
 
     for led_path in led_paths:

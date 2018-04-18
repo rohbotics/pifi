@@ -10,6 +10,7 @@ import json
 import pifi.nm_helper as nm
 import pifi.var_io as var_io
 import pifi.etc_io as etc_io
+import pifi.leds as leds
 
 def main():
     pifi_conf_settings = etc_io.get_conf()
@@ -20,6 +21,9 @@ def main():
     print("Using %s for wifi client mode" % ClientModeDevice.Interface)
 
     var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
+
+    status_led = pifi_conf_settings['status_led'] 
+    leds.blink(status_led, delay_on=100, delay_off=500)
  
     # Allow 30 seconds for network manager to sort itself out
     time.sleep(30)
@@ -27,6 +31,7 @@ def main():
     if (ClientModeDevice.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED):
         print("Client Device currently connected to: %s" 
             % ClientModeDevice.SpecificDevice().ActiveAccessPoint.Ssid)
+        leds.off(status_led)
         return
     else:
         print("Device is not connected to any network, Looking for pending connections")
@@ -43,6 +48,8 @@ def main():
             
             new_pending = var_io.readPendingConnections().remove(best_con)
             var_io.writePendingConnections(new_pending)
+
+            leds.off(status_led)
             return
         except ValueError:
             pass
