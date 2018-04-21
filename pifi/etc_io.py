@@ -76,7 +76,9 @@ default_conf = \
 {
     'delete_existing_ap_connections' : True,
     'ap_device' : 'any',
-    'client_device' : 'any'
+    'client_device' : 'any',
+    'status_led' : None,
+    'button_device_name' : None
 }
 
 def get_conf(open=open):
