@@ -2,7 +2,7 @@
     "connection": {
         "id": "Pifi AP Mode",
         "type": "802-11-wireless",
-        "autoconnect": "False",
+        "autoconnect": false,
         "uuid": "@(uuid_str)"
     },
 

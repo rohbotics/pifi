@@ -36,6 +36,85 @@ class EtcIOTests(unittest.TestCase):
         self.assertIsInstance(conf, dict)
         self.assertEqual(conf, {'Foo' : 'AF:BF:CF:0F:1F:2F'})
 
+    ### 
+    # Tests for work around for a bug in the default_ap config for some time
+    # the autoconnect field was a string, instead of a bool, causing
+    # Network manager to not be happy, this was shipped and as it is a
+    # config file, it won't be fixed by updating, so this works around 
+    # that issue
+    ###
+    def test_pure_json_autoconnect_string_to_bool_false(self):
+        data = """
+        {
+            "connection": {
+                "id": "Pifi AP Mode",
+                "type": "802-11-wireless",
+                "autoconnect": "False",
+                "uuid": "foo-bar-foo-bar"
+            }
+        }
+        """
+
+        f = mock.mock_open(read_data=data)
+        conf = etc_io.get_default_ap_conf('AF:BF:CF:0F:1F:2F', open=f)
+        self.assertIsInstance(conf['connection']['autoconnect'], bool)
+        self.assertEqual(conf['connection']['autoconnect'], False)
+        self.assertIsInstance(conf, dict)
+
+    def test_pure_json_autoconnect_string_to_bool_true(self):
+        data = """
+        {
+            "connection": {
+                "id": "Pifi AP Mode",
+                "type": "802-11-wireless",
+                "autoconnect": "True",
+                "uuid": "foo-bar-foo-bar"
+            }
+        }
+        """
+
+        f = mock.mock_open(read_data=data)
+        conf = etc_io.get_default_ap_conf('AF:BF:CF:0F:1F:2F', open=f)
+        self.assertIsInstance(conf['connection']['autoconnect'], bool)
+        self.assertEqual(conf['connection']['autoconnect'], True)
+        self.assertIsInstance(conf, dict)
+
+    def test_pure_json_autoconnect_bool(self):
+        data = """
+        {
+            "connection": {
+                "id": "Pifi AP Mode",
+                "type": "802-11-wireless",
+                "autoconnect": false,
+                "uuid": "foo-bar-foo-bar"
+            }
+        }
+        """
+
+        f = mock.mock_open(read_data=data)
+        conf = etc_io.get_default_ap_conf('AF:BF:CF:0F:1F:2F', open=f)
+        self.assertIsInstance(conf['connection']['autoconnect'], bool)
+        self.assertEqual(conf['connection']['autoconnect'], False)
+        self.assertIsInstance(conf, dict)     
+
+        data = """
+        {
+            "connection": {
+                "id": "Pifi AP Mode",
+                "type": "802-11-wireless",
+                "autoconnect": true,
+                "uuid": "foo-bar-foo-bar"
+            }
+        }
+        """
+
+        f = mock.mock_open(read_data=data)
+        conf = etc_io.get_default_ap_conf('AF:BF:CF:0F:1F:2F', open=f)
+        self.assertIsInstance(conf['connection']['autoconnect'], bool)
+        self.assertEqual(conf['connection']['autoconnect'], True)
+        self.assertIsInstance(conf, dict)   
+    
+
     def test_nonexistant_conf(self):
         f = mock.Mock(side_effect=FileNotFoundError('foo'))
         conf = etc_io.get_conf(open=f)

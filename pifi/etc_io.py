@@ -62,7 +62,29 @@ def get_default_ap_conf(mac, open=open):
                 "hostname": hostname
                 }
             )
-            return json.loads(expanded_ap_conf)
+            ap_config = json.loads(expanded_ap_conf)
+
+            ### 
+            # Work around for a bug in the default_ap config for some time
+            # the autoconnect field was a string, instead of a bool, causing
+            # Network manager to not be happy, this was shipped and as it is a
+            # config file, it won't be fixed by updating, so this works around 
+            # that issue by making that part of the config a bool
+            # 
+            # The fallback_ap mode configuration was always correct, and is also
+            # always going to be fixed on update, so we only have to apply this
+            # fixup on input coming in from the config file
+            ###
+            if 'connection' in ap_config:
+                if isinstance(ap_config['connection']['autoconnect'], str):
+                    tmp = ap_config['connection']['autoconnect'].lower()
+                    # We del so that we can reassign it as different type
+                    del ap_config['connection']['autoconnect']
+                    if tmp == 'true':
+                        ap_config['connection']['autoconnect'] = True
+                    else:
+                        ap_config['connection']['autoconnect'] = False
+            return ap_config
     except FileNotFoundError:
         print("WARN /etc/pifi/default_ap.em doesn't exist, using fallback configuration")
         return fallback_ap_conf
