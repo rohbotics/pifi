@@ -144,6 +144,51 @@ class pifiCommandlineTests(unittest.TestCase):
 
         self.assertEqual(cm.exception.code, 0)
 
+    def test_simple_cli_parse(self):
+        del sys.modules['pifi.pifi']
+        import pifi.pifi as tmp_pifi
+        s = mock.MagicMock()
+        tmp_pifi.status = s
+        a = mock.MagicMock()
+        tmp_pifi.add = a
+        ls = mock.MagicMock()
+        tmp_pifi.list_seen = ls
+        lp = mock.MagicMock()
+        tmp_pifi.list_pending = lp
+        sh = mock.MagicMock()
+        tmp_pifi.set_hostname = sh
+
+        tmp_pifi.main(argv=['status'])
+        self.assertIn(mock.call(), s.mock_calls)
+        tmp_pifi.main(argv=['list', 'seen'])
+        self.assertIn(mock.call(), ls.mock_calls)
+        tmp_pifi.main(argv=['list', 'pending'])
+        self.assertIn(mock.call(), lp.mock_calls)
+
+    def test_args_cli_parse(self):
+        del sys.modules['pifi.pifi']
+        import pifi.pifi as tmp_pifi
+        s = mock.MagicMock()
+        tmp_pifi.status = s
+        a = mock.MagicMock()
+        tmp_pifi.add = a
+        ls = mock.MagicMock()
+        tmp_pifi.list_seen = ls
+        lp = mock.MagicMock()
+        tmp_pifi.list_pending = lp
+        sh = mock.MagicMock()
+        tmp_pifi.set_hostname = sh
+
+        tmp_pifi.main(argv=['set-hostname', 'foo'])
+        self.assertIn(mock.call('foo'), sh.mock_calls)
+        tmp_pifi.main(argv=['set-hostname', 'bar'])
+        self.assertIn(mock.call('bar'), sh.mock_calls)
+
+        tmp_pifi.main(argv=['add', 'foo', 'bar'])
+        self.assertIn(mock.call('foo', 'bar'), a.mock_calls)
+        tmp_pifi.main(argv=['add', 'bar'])
+        self.assertIn(mock.call('bar', None), a.mock_calls)
+
 
 def main():
     unittest.main()

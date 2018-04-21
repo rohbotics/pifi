@@ -18,7 +18,7 @@ from docopt import docopt
 
 import NetworkManager
 import json
-import os
+import os, sys
 
 import pifi.nm_helper as nm
 import pifi.var_io as var_io
@@ -122,8 +122,8 @@ def set_hostname(new_hostname):
     except PermissionError:
         print("Error writing to /etc/hosts or /etc/hostname, make sure you are running with sudo")
 
-def main():
-    arguments = docopt(__doc__, version='pifi version 0.4.1')
+def main(argv=sys.argv[1:]):
+    arguments = docopt(__doc__, argv=argv, version='pifi version 0.4.1')
     
     if arguments['status']:
         status()
