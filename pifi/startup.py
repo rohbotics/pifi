@@ -1,61 +1,48 @@
 # Wait a bit before starting
 import time
-time.sleep(5)
+# time.sleep(5)
 
 import NetworkManager
 
 import uuid
 import json
+import evdev
+from select import select
 
 import pifi.nm_helper as nm
 import pifi.var_io as var_io
 import pifi.etc_io as etc_io
 import pifi.leds as leds
 
-def main():
-    pifi_conf_settings = etc_io.get_conf()
+def handle_button(pifi_conf_settings, ApModeDevice, ClientModeDevice):
+    button = None
 
-    ApModeDevice, ClientModeDevice = nm.select_devices(pifi_conf_settings)
+    input_devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
+    for device in input_devices:
+        print(device.fn, device.name, device.phys)
+        if device.name == pifi_conf_settings['button_device_name']:
+            print("Using %s" % device.fn)
+            button = device
+            button.grab()
 
-    print("Using %s for AP mode support" % ApModeDevice.Interface)
-    print("Using %s for wifi client mode" % ClientModeDevice.Interface)
-
-    var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
-
-    status_led = pifi_conf_settings['status_led'] 
-    leds.blink(status_led, delay_on=100, delay_off=500)
- 
-    # Allow 30 seconds for network manager to sort itself out
-    time.sleep(30)
-
-    if (ClientModeDevice.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED):
-        print("Client Device currently connected to: %s" 
-            % ClientModeDevice.SpecificDevice().ActiveAccessPoint.Ssid)
-        leds.off(status_led)
+    if button is None:
         return
-    else:
-        print("Device is not connected to any network, Looking for pending connections")
 
-        pending = var_io.readPendingConnections()
+    while 1:
+        r,w,x = select([button.fd], [], [], 10)
+        if r:
+            for event in button.read():
+                if event.code == evdev.ecodes.KEY_CONFIG:
+                    break
+            # Construct to be able to break out of outer loop from inner loop       
+            else:
+                continue
+            break
+    # Button was pressed, start AP mode
+    start_ap_mode(pifi_conf_settings, ApModeDevice, ClientModeDevice)
 
-        # Try to pick a connection to use, if none found, just continue
-        try:
-            # Use the best connection
-            best_ap, best_con = nm.selectConnection(nm.availibleConnections(ClientModeDevice, pending))
-
-            print("Connecting to %s" % best_con['802-11-wireless']['ssid'])
-            NetworkManager.NetworkManager.AddAndActivateConnection(best_con, ClientModeDevice, best_ap)
-            
-            new_pending = var_io.readPendingConnections().remove(best_con)
-            var_io.writePendingConnections(new_pending)
-
-            leds.off(status_led)
-            return
-        except ValueError:
-            pass
-		
-        # If we reach this point, we gave up on Client mode
-        print("No SSIDs from pending connections found, Starting AP mode")
+def start_ap_mode(pifi_conf_settings, ApModeDevice, ClientModeDevice):
+        print("Starting AP mode")
 
         if pifi_conf_settings['delete_existing_ap_connections'] == False:
             print("Looking for existing AP mode connection")
@@ -81,3 +68,56 @@ def main():
 
         print("Initializing AP Mode")
         NetworkManager.NetworkManager.AddAndActivateConnection(settings, ApModeDevice, "/")
+
+        status_led = pifi_conf_settings['status_led'] 
+        leds.blink(status_led, delay_on=100, delay_off=500)
+
+def main():            
+    pifi_conf_settings = etc_io.get_conf()
+
+    ApModeDevice, ClientModeDevice = nm.select_devices(pifi_conf_settings)
+
+    print("Using %s for AP mode support" % ApModeDevice.Interface)
+    print("Using %s for wifi client mode" % ClientModeDevice.Interface)
+
+    var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
+
+    status_led = pifi_conf_settings['status_led'] 
+    leds.blink(status_led, delay_on=100, delay_off=500)
+ 
+    # Allow 30 seconds for network manager to sort itself out
+    time.sleep(30)
+
+    if (ClientModeDevice.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED):
+        print("Client Device currently connected to: %s" 
+            % ClientModeDevice.SpecificDevice().ActiveAccessPoint.Ssid)
+        leds.off(status_led)
+        # Run button handler, and when that is done, exit
+        handle_button(pifi_conf_settings, ApModeDevice, ClientModeDevice)
+        return
+    else:
+        print("Device is not connected to any network, Looking for pending connections")
+
+        pending = var_io.readPendingConnections()
+
+        # Try to pick a connection to use, if none found, just continue
+        try:
+            # Use the best connection
+            best_ap, best_con = nm.selectConnection(nm.availibleConnections(ClientModeDevice, pending))
+
+            print("Connecting to %s" % best_con['802-11-wireless']['ssid'])
+            NetworkManager.NetworkManager.AddAndActivateConnection(best_con, ClientModeDevice, best_ap)
+            
+            new_pending = var_io.readPendingConnections().remove(best_con)
+            var_io.writePendingConnections(new_pending)
+
+            leds.off(status_led)
+            # Run button handler, and when that is done, exit
+            handle_button(pifi_conf_settings, ApModeDevice, ClientModeDevice)
+            return
+        except ValueError:
+            pass
+
+		# If we reach this point, we gave up on Client mode
+        print("No SSIDs from pending connections found")
+        start_ap_mode(pifi_conf_settings, ApModeDevice, ClientModeDevice)
