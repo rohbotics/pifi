@@ -447,7 +447,7 @@ class NMHelperTests(unittest.TestCase):
             'client_device' : 'foo0'
         }
 
-        with self.assertRaisesRegexp(AssertionError, 'not ap capable'):
+        with self.assertRaisesRegex(AssertionError, 'not ap capable'):
             nm_helper.select_devices(conf, NetworkManager=nm)
 
     def test_select_devices_same_specified_not_wireless(self):
@@ -472,7 +472,7 @@ class NMHelperTests(unittest.TestCase):
             'client_device' : 'foo0'
         }
 
-        with self.assertRaisesRegexp(AssertionError, 'not ap capable|not wireless'):
+        with self.assertRaisesRegex(AssertionError, 'not ap capable|not wireless'):
             nm_helper.select_devices(conf, NetworkManager=nm)
 
     def test_select_devices_same_specified_not_found(self):
