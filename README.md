@@ -28,6 +28,7 @@ Pifi runs a script at boot up that does the following by default:
 * If any of the pending connections are visible, connect to them, and remove them from pending
 * Otherwise look for an existing AP mode definiton and start it
 * If there is no existing AP mode definition create one with the configuration in `/etc/pifi/default_ap.em` (SSID:`<HOSTNAME><4HEX>`   and password:'robotseverywhere'). (Where `<HOSTNAME>` is the hostname of the system and `<4HEX>` is the last 4 digits of the device mac address.)
+* If AP mode was not started, and a button is configured, wait for a button press to start AP mode 
 
 ## Connecting to a network while in AP mode
 Connect to the ap mode wifi (default `<HOSTNAME><4HEX>`, password robotseverywhere) on your laptop. (Where `<HOSTNAME>` is the hostname of the system and `<4HEX>` is the last 4 digits of the device mac address.)
@@ -37,6 +38,11 @@ SSH into the device with `ssh ubuntu@10.42.0.1`.
 Once logged into the device, run `sudo pifi add WIFI_SSID PASSWORD`, and reboot `sudo reboot`.
 
 Your device should now be connected to your network.  
+
+## Using a Button to Go force AP Mode
+When pifi starts without AP mode (because it connected to an existing network), if there is an input device specified in `pifi.conf` it will wait for a `KEY_CONFIG` press and start AP mode.
+
+On Magni, the input device is the `gpio-keys` driver, connected to a button on the sonar board. This allows the button to show up as a input device, with a name specified in the device tree file. The same name should be specified in `pifi.conf`, so that pifi can grab that device and listen for events. On a event that matches a `KEY_CONFIG` press, 
 
 ## Installation
 The recommended way to install is from debs. The apt source at https://packages.ubiquityrobotics.com/ has the packages.
@@ -77,6 +83,14 @@ ap_device: any
 # Default: any
 # If set to any pifi will pick one automatically
 client_device: any
+
+# Path to a Linux LED device to use
+# ex: /sys/class/leds/led0
+status_led: None
+
+# Name of a user input device to use
+# ex: "Keyboard 5"
+button_device_name: None
 ```
 
 
