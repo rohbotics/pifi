@@ -1,3 +1,9 @@
+pifi (0.5.0) xenial; urgency=medium
+
+  * Added support for LEDs and Buttons 
+
+ -- Rohan Agrawal <rohan@aleopile.com>  Fri, 01 Jun 2018 19:55:04 -0700
+
 pifi (0.4.1) xenial; urgency=medium
 
   * Quick test 
