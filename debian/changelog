@@ -1,3 +1,9 @@
+pifi (0.5.3) xenial; urgency=medium
+
+  * Warn when trying to add network with default hostname 
+
+ -- Rohan Agrawal <rohan@aleopile.com>  Sat, 21 Jul 2018 20:02:41 -0700
+
 pifi (0.5.2) xenial; urgency=medium
 
   * Fix bad pifi.conf 
