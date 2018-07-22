@@ -18,7 +18,7 @@ from docopt import docopt
 
 import NetworkManager
 import json
-import os, sys
+import os, sys, socket
 
 import pifi.nm_helper as nm
 import pifi.var_io as var_io
@@ -122,7 +122,10 @@ def set_hostname(new_hostname):
 
     try:
         etc_io.set_hostname(old_hostname, new_hostname)
+        socket.set_hostname(new_hostname)
     except PermissionError:
+        print("Error writing to /etc/hosts or /etc/hostname, make sure you are running with sudo")
+    except OSError:
         print("Error writing to /etc/hosts or /etc/hostname, make sure you are running with sudo")
 
 def main(argv=sys.argv[1:]):
