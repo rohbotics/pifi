@@ -4,6 +4,7 @@ pifi
 Usage:
   pifi status
   pifi add <ssid> [<password>]
+  pifi remove <ssid>
   pifi list seen
   pifi list pending
   pifi set-hostname <hostname>
@@ -25,6 +26,40 @@ import pifi.var_io as var_io
 import pifi.etc_io as etc_io
 
 import uuid
+
+
+def query_yes_no(question, default="no"):
+    """Ask a yes/no question via raw_input() and return their answer.
+
+    "question" is a string that is presented to the user.
+    "default" is the presumed answer if the user just hits <Enter>.
+        It must be "yes" (the default), "no" or None (meaning
+        an answer is required of the user).
+
+    The "answer" return value is True for "yes" or False for "no".
+    """
+    valid = {"yes": True, "y": True, "ye": True,
+             "no": False, "n": False}
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while True:
+        sys.stdout.write(question + prompt)
+        choice = input().lower()
+        if default is not None and choice == '':
+            return valid[default]
+        elif choice in valid:
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' "
+                             "(or 'y' or 'n').\n")
+
 
 def status(nm=nm):
     devices = 0
@@ -103,6 +138,34 @@ def add(ssid, password, var_io=var_io):
     except PermissionError:
         print("Error writing to /var/lib/pifi/pending, make sure you are running with sudo")
 
+def remove(ssid):
+    for device in nm.managedWifiDevices():
+        if device.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED:
+            current_connection = device.GetAppliedConnection(0)
+            # SSID returned as list of bytes
+            if ssid == b''.join(current_connection[0]['802-11-wireless']['ssid']).decode("utf-8"):
+                print("WARN: Connection is currently active")
+                print("WARN: Deleting can disrupt existing SSH connetions")
+                if query_yes_no("Continue Deletion?") == False:
+                    return
+
+    pending = var_io.readPendingConnections()
+    for con in pending:
+        if ssid == con['802-11-wireless']['ssid']:
+            pending.remove(con)
+
+    try:
+        var_io.writePendingConnections(pending)
+    except PermissionError:
+        print("Error writing to /var/lib/pifi/pending, make sure you are running with sudo")
+        return
+
+    for con in nm.existingConnections():
+        settings = con.GetSettings()
+        if ssid == settings['802-11-wireless']['ssid']:
+            con.Delete()
+
+
 def list_seen():
     for ssid in var_io.readSeenSSIDs():
         print(ssid)
@@ -138,6 +201,9 @@ def main(argv=sys.argv[1:]):
             add(arguments['<ssid>'], arguments['<password>'])
         else:
             add(arguments['<ssid>'], None)
+    if arguments['remove']:
+        if '<password>' is not None:
+            remove(arguments['<ssid>'])    
     if arguments['list'] and arguments['seen']:
         list_seen()
     if arguments['list'] and arguments['pending']:

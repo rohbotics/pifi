@@ -85,6 +85,13 @@ def existingAPConnections(NetworkManager=NetworkManager):
             if settings['802-11-wireless']['mode'] == 'ap':
                 yield connection
 
+def existingConnections(NetworkManager=NetworkManager):
+    for connection in NetworkManager.Settings.ListConnections():
+        settings = connection.GetSettings()
+        if '802-11-wireless' in settings:
+            if settings['802-11-wireless']['mode'] != 'ap':
+                yield connection
+
 def select_devices(pifi_conf, NetworkManager=NetworkManager):
     """
     Select the ap mode device and client mode devices to use
