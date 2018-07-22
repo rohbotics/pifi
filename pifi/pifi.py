@@ -122,7 +122,7 @@ def set_hostname(new_hostname):
 
     try:
         etc_io.set_hostname(old_hostname, new_hostname)
-        socket.set_hostname(new_hostname)
+        socket.sethostname(new_hostname)
     except PermissionError:
         print("Error writing to /etc/hosts or /etc/hostname, make sure you are running with sudo")
     except OSError:
