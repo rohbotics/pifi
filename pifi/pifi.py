@@ -48,6 +48,9 @@ def status(nm=nm):
         exit(2)
 
 def add(ssid, password, var_io=var_io):
+    if etc_io.get_hostname() == "ubiquityrobot":
+        print("WARN: Please use `pifi set-hostname` to change the hostname before connecting")
+
     pending = var_io.readPendingConnections()
 
     if password is not None:
