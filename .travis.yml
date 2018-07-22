@@ -11,7 +11,7 @@ addons:
     - libdbus-glib-1-dev # Make sure that all system deps for dbus are installed
 
 install:
-  - pip install .
+  - pip install -r requirements.txt --no-deps
   - pip install coveralls 
 
 script: coverage run --source pifi setup.py test
