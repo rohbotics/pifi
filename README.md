@@ -11,6 +11,7 @@ The command line tool is `pifi`:
 Usage:
   pifi status                 Shows if the device is in AP mode or connected to a network
   pifi add <ssid> <password>  Adds a connection to scan/connect to on bootup (needs sudo)
+  pifi remove <ssid>          Remove this network (will interfere with ssh)
   pifi list seen              Lists the SSIDs that see seen during bootup
   pifi list pending           Lists the SSIDs that still need to configured in NetworkManager
   pifi set-hostname <hostname> Set the hostname of the system, also deletes existing AP mode configurations
