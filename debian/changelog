@@ -1,3 +1,9 @@
+pifi (0.6.0) xenial; urgency=medium
+
+  * Add ability to remove a network 
+
+ -- Rohan Agrawal <rohan@aleopile.com>  Wed, 25 Jul 2018 20:24:44 -0700
+
 pifi (0.5.3) xenial; urgency=medium
 
   * Warn when trying to add network with default hostname 

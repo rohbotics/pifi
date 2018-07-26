@@ -192,7 +192,7 @@ def set_hostname(new_hostname):
         print("Error writing to /etc/hosts or /etc/hostname, make sure you are running with sudo")
 
 def main(argv=sys.argv[1:]):
-    arguments = docopt(__doc__, argv=argv, version='pifi version 0.5.3')
+    arguments = docopt(__doc__, argv=argv, version='pifi version 0.6.0')
     
     if arguments['status']:
         status()
