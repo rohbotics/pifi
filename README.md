@@ -40,7 +40,7 @@ Once logged into the device, run `sudo pifi add WIFI_SSID PASSWORD`, and reboot 
 
 Your device should now be connected to your network.  
 
-## Using a Button to Go force AP Mode
+## Using a Button to Start AP Mode
 When pifi starts without AP mode (because it connected to an existing network), if there is an input device specified in `pifi.conf` it will wait for a `KEY_CONFIG` press and start AP mode.
 
 On Magni, the input device is the `gpio-keys` driver, connected to a button on the sonar board. This allows the button to show up as a input device, with a name specified in the device tree file. The same name should be specified in `pifi.conf`, so that pifi can grab that device and listen for events. On a event that matches a `KEY_CONFIG` press, 
