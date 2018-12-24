@@ -1,6 +1,10 @@
-# Wait a bit before starting
 import time
-# time.sleep(5)
+
+# Wait a bit before starting if we are early in boot
+with open('/proc/uptime', 'r') as f:
+    uptime = float(f.readline().split()[0])
+    if (uptime < 5):
+        time.sleep(3)
 
 import NetworkManager
 
