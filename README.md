@@ -9,17 +9,17 @@ Pifi uses NetworkManager to do the heavy lifting under the hood.
 The command line tool is `pifi`:
 ```
 Usage:
-  pifi status                 Shows if the device is in AP mode or connected to a network
-  pifi add <ssid> <password>  Adds a connection to scan/connect to on bootup (needs sudo)
-  pifi remove <ssid>          Remove this network (will interfere with ssh)
-  pifi list seen              Lists the SSIDs that see seen during bootup
-  pifi list pending           Lists the SSIDs that still need to configured in NetworkManager
-  pifi set-hostname <hostname> Set the hostname of the system, also deletes existing AP mode configurations
-  pifi --version              Prints the version of pifi on your system
+  pifi status                   Shows if the device is in AP mode or connected to a network
+  pifi add <ssid> <password>    Adds a connection to scan/connect to on bootup (needs sudo)
+  pifi remove <ssid>            Remove this network (may interfere with ssh)
+  pifi list seen                Lists the SSIDs that see seen during bootup
+  pifi list pending             Lists the SSIDs that still need to configured in NetworkManager
+  pifi set-hostname <hostname>  Set the hostname of the system, also deletes existing AP mode configurations
+  pifi --version                Prints the version of pifi on your system
 
 Options:
-  -h --help    Show a help message
-  --version    Show pifi version
+  -h --help    Show this help message and exit
+  --version    Show pifi version and exit
 ```
 
 Pifi runs a script at boot up that does the following by default:
