@@ -71,7 +71,7 @@ def status(nm=nm):
             print("Device is not activated")
             exit(0)
         current_connection = ApModeDevice.GetAppliedConnection(0)
-        if current_connection[0]['802-11-wireless']['mode'] == "ap":
+        if 'mode' in current_connection[0]['802-11-wireless'] and current_connection[0]['802-11-wireless']['mode'] == "ap":
             print("Device is currently acting as an Access Point")
         else:
             ssid = current_connection[0]['802-11-wireless']['ssid']
