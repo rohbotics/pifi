@@ -73,8 +73,11 @@ def start_ap_mode(pifi_conf_settings, ApModeDevice, ClientModeDevice):
         print("Initializing AP Mode")
         NetworkManager.NetworkManager.AddAndActivateConnection(settings, ApModeDevice, "/")
 
-        status_led = pifi_conf_settings['status_led'] 
-        leds.blink(status_led, delay_on=100, delay_off=500)
+        status_led = pifi_conf_settings['status_led']
+        try:
+            leds.blink(status_led, delay_on=100, delay_off=500)
+        except:
+            print("Couldn't make leds blink, moving on")
 
 def main():            
     pifi_conf_settings = etc_io.get_conf()
@@ -86,8 +89,11 @@ def main():
 
     var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
 
-    status_led = pifi_conf_settings['status_led'] 
-    leds.blink(status_led, delay_on=100, delay_off=500)
+    status_led = pifi_conf_settings['status_led']
+    try:
+        leds.blink(status_led, delay_on=100, delay_off=500)
+    except:
+        print("Couldn't make leds blink, moving on")
  
     # Allow 30 seconds for network manager to sort itself out
     time.sleep(30)
