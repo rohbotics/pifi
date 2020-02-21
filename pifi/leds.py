@@ -28,6 +28,13 @@ def blink(led_paths, delay_on=500, delay_off=500, open=open):
         with open(led_path + '/delay_off', 'w+') as led_file:
             led_file.write(str(delay_off))
 
+def try_blink(led_paths, delay_on=500, delay_off=500, open=open):
+    try:
+        blink(led_paths, delay_on=delay_on, delay_off=delay_off, open=open)
+    except:
+        print("Error starting LED blink animation")
+
+
 def off(led_paths, open=open):
     """
     Turn the led(s) the leds off, canceling any blinking
