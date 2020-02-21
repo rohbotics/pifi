@@ -18,6 +18,11 @@ import pifi.var_io as var_io
 import pifi.etc_io as etc_io
 import pifi.leds as leds
 
+# LED Animation patterns (ms on, ms off)
+initializing_led = (100, 300)
+ap_led = (100, 1000)
+connected_led = (100, 2000)
+
 def handle_button(pifi_conf_settings, ApModeDevice, ClientModeDevice):
     button = None
 
@@ -74,10 +79,7 @@ def start_ap_mode(pifi_conf_settings, ApModeDevice, ClientModeDevice):
         NetworkManager.NetworkManager.AddAndActivateConnection(settings, ApModeDevice, "/")
 
         status_led = pifi_conf_settings['status_led']
-        try:
-            leds.blink(status_led, delay_on=100, delay_off=500)
-        except:
-            print("Couldn't make leds blink, moving on")
+        leds.try_blink(status_led, delay_on=ap_led[0], delay_off=ap_led[1])
 
 def main():            
     pifi_conf_settings = etc_io.get_conf()
@@ -88,10 +90,7 @@ def main():
     print("Using %s for wifi client mode" % ClientModeDevice.Interface)
 
     status_led = pifi_conf_settings['status_led']
-    try:
-        leds.blink(status_led, delay_on=100, delay_off=500)
-    except:
-        print("Couldn't make leds blink, moving on")
+    leds.try_blink(status_led, delay_on=initializing_led[0], delay_off=initializing_led[1])
  
     # Allow 30 seconds for network manager to sort itself out
     time.sleep(30)
@@ -100,7 +99,7 @@ def main():
     if (ClientModeDevice.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED):
         print("Client Device currently connected to: %s" 
             % ClientModeDevice.SpecificDevice().ActiveAccessPoint.Ssid)
-        leds.off(status_led)
+        leds.try_blink(status_led, delay_on=connected_led[0], delay_off=connected_led[1])
         # Run button handler, and when that is done, exit
         handle_button(pifi_conf_settings, ApModeDevice, ClientModeDevice)
         return
@@ -120,7 +119,7 @@ def main():
             new_pending = var_io.readPendingConnections().remove(best_con)
             var_io.writePendingConnections(new_pending)
 
-            leds.off(status_led)
+            leds.try_blink(status_led, delay_on=connected_led[0], delay_off=connected_led[1])
             # Run button handler, and when that is done, exit
             handle_button(pifi_conf_settings, ApModeDevice, ClientModeDevice)
             return
