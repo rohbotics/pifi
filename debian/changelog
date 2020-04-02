@@ -1,3 +1,10 @@
+pifi (0.7.0) xenial; urgency=medium
+
+  * Fix status in AP mode
+  * Wrap LED blinking in try_catch
+
+ -- Rohan Agrawal <rohan@aleopile.com>  Thu, 02 Apr 2020 13:18:26 -0700
+
 pifi (0.6.0) xenial; urgency=medium
 
   * Add ability to remove a network 
