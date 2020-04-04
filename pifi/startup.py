@@ -130,3 +130,4 @@ def main():
 		# If we reach this point, we gave up on Client mode
         print("No SSIDs from pending connections found")
         start_ap_mode(pifi_conf_settings, ApModeDevice, ClientModeDevice)
+

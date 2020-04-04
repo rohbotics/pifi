@@ -8,6 +8,7 @@ Usage:
   pifi list seen
   pifi list pending
   pifi set-hostname <hostname>
+  pifi rescan
   pifi --version
 
 Options:
@@ -19,11 +20,13 @@ from docopt import docopt
 
 import NetworkManager
 import json
-import os, sys, socket
+import time
+import os, sys, socket, subprocess
 
 import pifi.nm_helper as nm
 import pifi.var_io as var_io
 import pifi.etc_io as etc_io
+import pifi.startup as startup
 
 import uuid
 
@@ -178,7 +181,6 @@ def list_pending():
             print("WARN: Found non wireless pending connection: %s" % 
                     con['connection']['id'])
 
-
 def set_hostname(new_hostname):
     old_hostname = etc_io.get_hostname()
     print("Changing hostname from %s to %s" % (old_hostname, new_hostname))
@@ -190,6 +192,54 @@ def set_hostname(new_hostname):
         print("Error writing to /etc/hosts or /etc/hostname, make sure you are running with sudo")
     except OSError:
         print("Error writing to /etc/hosts or /etc/hostname, make sure you are running with sudo")
+
+def rescan():
+    pifi_conf_settings = etc_io.get_conf()
+    ApModeDevice, ClientModeDevice = nm.select_devices(pifi_conf_settings)
+
+    if ApModeDevice.State != 100:
+        print("AP Device is not active")
+    else:
+        current_connection = ApModeDevice.GetAppliedConnection(0)
+        if 'mode' in current_connection[0]['802-11-wireless'] and current_connection[0]['802-11-wireless']['mode'] == "ap":
+            print("Device is currently acting as an Access Point, Rescanning requires turning this off")
+            print("This will disrupt any SSH connections")
+            if query_yes_no("Continue?") == False:
+                return
+            ApModeDevice.Disconnect()
+
+    print("Waiting for wifi rescan")
+    time.sleep(30)
+    try:
+        var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
+    except PermissionError:
+        print("Error writing to /var/lib/pifi/seen_ssids, continuing")
+
+    if (ClientModeDevice.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED):
+        print("Connected to: %s" 
+            % ClientModeDevice.SpecificDevice().ActiveAccessPoint.Ssid)
+        return
+    
+    print("Device is not connected to any network, Looking for pending connections")
+    pending = var_io.readPendingConnections()
+
+    # Try to pick a connection to use, if none found, just continue
+    try:
+        # Use the best connection
+        best_ap, best_con = nm.selectConnection(nm.availibleConnections(ClientModeDevice, pending))
+
+        print("Connecting to %s" % best_con['802-11-wireless']['ssid'])
+        NetworkManager.NetworkManager.AddAndActivateConnection(best_con, ClientModeDevice, best_ap)
+        
+        new_pending = var_io.readPendingConnections().remove(best_con)
+        var_io.writePendingConnections(new_pending)
+        return
+    except ValueError:
+        pass
+
+    # If we reach this point, we gave up on Client mode
+    print("No SSIDs from pending connections found")
+    startup.start_ap_mode(pifi_conf_settings, ApModeDevice, ClientModeDevice)
 
 def main(argv=sys.argv[1:]):
     arguments = docopt(__doc__, argv=argv, version='pifi version 0.7.1')
@@ -210,3 +260,5 @@ def main(argv=sys.argv[1:]):
         list_pending()
     if arguments['set-hostname']:
         set_hostname(arguments['<hostname>'])
+    if arguments['rescan']:
+        rescan()
