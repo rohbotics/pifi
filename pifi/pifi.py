@@ -4,16 +4,17 @@ pifi
 Usage:
   pifi status
   pifi add <ssid> [<password>]
-  pifi remove <ssid>
+  pifi remove [-y] <ssid>
   pifi list seen
   pifi list pending
   pifi set-hostname <hostname>
-  pifi rescan
+  pifi rescan [-y]
   pifi --version
 
 Options:
   -h --help    Show this help
   --version    Show pifi version
+  -y           Bypass any prompting
 
 """
 from docopt import docopt
@@ -30,7 +31,7 @@ import pifi.startup as startup
 
 import uuid
 
-
+skip_prompt = False
 def query_yes_no(question, default="no"):
     """Ask a yes/no question via raw_input() and return their answer.
 
@@ -41,6 +42,10 @@ def query_yes_no(question, default="no"):
 
     The "answer" return value is True for "yes" or False for "no".
     """
+    global skip_prompt
+    if skip_prompt == True:
+        return True
+
     valid = {"yes": True, "y": True, "ye": True,
              "no": False, "n": False}
     if default is None:
@@ -166,6 +171,7 @@ def remove(ssid):
     for con in nm.existingConnections():
         settings = con.GetSettings()
         if ssid == settings['802-11-wireless']['ssid']:
+            pass
             con.Delete()
 
 
@@ -243,6 +249,11 @@ def rescan():
 
 def main(argv=sys.argv[1:]):
     arguments = docopt(__doc__, argv=argv, version='pifi version 0.7.1')
+
+    global skip_prompt
+    if '-y' in arguments:
+        if arguments['-y']:
+            skip_prompt = True
     
     if arguments['status']:
         status()
