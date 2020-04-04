@@ -87,8 +87,6 @@ def main():
     print("Using %s for AP mode support" % ApModeDevice.Interface)
     print("Using %s for wifi client mode" % ClientModeDevice.Interface)
 
-    var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
-
     status_led = pifi_conf_settings['status_led']
     try:
         leds.blink(status_led, delay_on=100, delay_off=500)
@@ -97,6 +95,7 @@ def main():
  
     # Allow 30 seconds for network manager to sort itself out
     time.sleep(30)
+    var_io.writeSeenSSIDs(nm.seenSSIDs([ClientModeDevice]))
 
     if (ClientModeDevice.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED):
         print("Client Device currently connected to: %s" 
