@@ -1,4 +1,10 @@
-pifi (0.7.1) UNRELEASED; urgency=medium
+pifi (0.8.0) UNRELEASED; urgency=medium
+
+  * Add rescan and -y features 
+
+ -- Rohan Agrawal <rohan@gridlock>  Sat, 04 Apr 2020 16:17:06 -0700
+
+pifi (0.7.1) xenial; urgency=medium
 
   * Fixed pifi list seen 
 

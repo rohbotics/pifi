@@ -248,7 +248,7 @@ def rescan():
     startup.start_ap_mode(pifi_conf_settings, ApModeDevice, ClientModeDevice)
 
 def main(argv=sys.argv[1:]):
-    arguments = docopt(__doc__, argv=argv, version='pifi version 0.7.1')
+    arguments = docopt(__doc__, argv=argv, version='pifi version 0.8.0')
 
     global skip_prompt
     if '-y' in arguments:
