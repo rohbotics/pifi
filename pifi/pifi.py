@@ -138,7 +138,7 @@ def add(ssid, password, var_io=var_io):
                 'ipv6': {'method': 'auto'}
         }
 
-
+    print("Added connection %s, will attempt to connect to it on future reboots" % ssid)
     pending.append(new_connection)
 
     try:
