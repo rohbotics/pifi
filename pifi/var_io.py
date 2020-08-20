@@ -17,15 +17,17 @@ pending_path = "/var/lib/pifi/pending"
 import os
 import json
 
+
 def ensureDir(file_path):
     """
     Takes a path to a file, and creates the parent directory if it doen't exist.
     """
     directory = os.path.dirname(file_path)
-    try: 
+    try:
         os.makedirs(directory)
     except FileExistsError:
         pass
+
 
 def readSeenSSIDs(open=open):
     """
@@ -39,10 +41,11 @@ def readSeenSSIDs(open=open):
     try:
         with open(seen_SSIDs_path) as seen_file:
             seen_ssids = seen_file.readlines()
-            seen_ssids = [ssid.strip() for ssid in seen_ssids] 
+            seen_ssids = [ssid.strip() for ssid in seen_ssids]
             return seen_ssids
     except FileNotFoundError:
         return list()
+
 
 def writeSeenSSIDs(ssids, open=open, ensureDir=ensureDir):
     """
@@ -52,10 +55,11 @@ def writeSeenSSIDs(ssids, open=open, ensureDir=ensureDir):
     If the file already exists, this overwrites it.
     """
     ensureDir(seen_SSIDs_path)
-    with open(seen_SSIDs_path, 'w+') as seen_file:
+    with open(seen_SSIDs_path, "w+") as seen_file:
         seen_file.truncate()
         for ssid in ssids:
-            seen_file.write('%s\n' % (ssid))
+            seen_file.write("%s\n" % (ssid))
+
 
 def readPendingConnections(open=open):
     """
@@ -65,17 +69,18 @@ def readPendingConnections(open=open):
     If the file json is parsed and is not a list, raises a ValueError.
     """
     try:
-        with open(pending_path, 'r') as pending_file:
+        with open(pending_path, "r") as pending_file:
             try:
                 pending_connections = json.load(pending_file)
             except ValueError:
-                print ("WARN failed to decode json in %s, ignoring" % pending_path)
+                print("WARN failed to decode json in %s, ignoring" % pending_path)
                 return list()
             if not isinstance(pending_connections, list):
                 raise ValueError("%s does not contain a json list" % pending_path)
             return pending_connections
     except FileNotFoundError:
         return list()
+
 
 def writePendingConnections(pending, open=open, ensureDir=ensureDir):
     """
@@ -84,7 +89,7 @@ def writePendingConnections(pending, open=open, ensureDir=ensureDir):
     If the file already exists, this overwrites it.
     """
     ensureDir(pending_path)
-    with open(pending_path, 'w+') as pending_file:
+    with open(pending_path, "w+") as pending_file:
         pending_file.seek(0)  # rewind
         if pending is not None:
             json.dump(pending, pending_file)
