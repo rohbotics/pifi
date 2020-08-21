@@ -12,7 +12,7 @@ class pifiCommandlineTests(unittest.TestCase):
         var = mock.MagicMock()
         var.configure_mock(**{'readPendingConnections.return_value': list()})
 
-        pifi.add('Foo', None, var_io=var)
+        pifi.add(['Foo'], var_io=var)
 
         var.readPendingConnections.assert_called_once_with()
         written_connection = var.writePendingConnections.call_args[0][0][0]
@@ -40,7 +40,7 @@ class pifiCommandlineTests(unittest.TestCase):
         var = mock.MagicMock()
         var.configure_mock(**{'readPendingConnections.return_value': list()})
 
-        pifi.add('Foo', 'bar', var_io=var)
+        pifi.add(['Foo', 'bar'], var_io=var)
 
         var.readPendingConnections.assert_called_once_with()
         written_connection = var.writePendingConnections.call_args[0][0][0]
@@ -74,7 +74,7 @@ class pifiCommandlineTests(unittest.TestCase):
         var = mock.MagicMock()
         var.configure_mock(**{'writePendingConnections.side_effect': PermissionError})
 
-        pifi.add('Foo', 'bar', var_io=var) # Only checking for no exceptions
+        pifi.add(['Foo', 'bar'], var_io=var) # Only checking for no exceptions
 
     def test_add_one_secure_connection_existing_list(self):
         existing_connection = {'Baz' : 'qux'}
@@ -82,7 +82,7 @@ class pifiCommandlineTests(unittest.TestCase):
         var = mock.MagicMock()
         var.configure_mock(**{'readPendingConnections.return_value': [existing_connection]})
 
-        pifi.add('Foo', 'bar', var_io=var)
+        pifi.add(['Foo', 'bar'], var_io=var)
 
         var.readPendingConnections.assert_called_once_with()
         written_connections = var.writePendingConnections.call_args[0][0]
@@ -117,7 +117,7 @@ class pifiCommandlineTests(unittest.TestCase):
         nm_mock = mock.MagicMock(**{'managedAPCapableDevices()' : managedAPCapableDevices})
 
         with self.assertRaises(SystemExit) as cm:
-            pifi.status(nm=nm_mock)
+            pifi.status([], nm=nm_mock)
 
         self.assertEqual(cm.exception.code, 2)
 
@@ -127,7 +127,7 @@ class pifiCommandlineTests(unittest.TestCase):
         nm_mock = mock.MagicMock(**{'managedAPCapableDevices' : managedAPCapableDevices})
 
         with self.assertRaises(SystemExit) as cm:
-            pifi.status(nm=nm_mock)
+            pifi.status([], nm=nm_mock)
 
         self.assertEqual(cm.exception.code, 0)
 
@@ -140,7 +140,7 @@ class pifiCommandlineTests(unittest.TestCase):
         nm_mock = mock.MagicMock(**{'managedAPCapableDevices' : managedAPCapableDevices})
 
         with self.assertRaises(SystemExit) as cm:
-            pifi.status(nm=nm_mock)
+            pifi.status([], nm=nm_mock)
 
         self.assertEqual(cm.exception.code, 0)
 
@@ -151,19 +151,17 @@ class pifiCommandlineTests(unittest.TestCase):
         tmp_pifi.status = s
         a = mock.MagicMock()
         tmp_pifi.add = a
-        ls = mock.MagicMock()
-        tmp_pifi.list_seen = ls
-        lp = mock.MagicMock()
-        tmp_pifi.list_pending = lp
+        lc = mock.MagicMock()
+        tmp_pifi.list_command = lc
         sh = mock.MagicMock()
         tmp_pifi.set_hostname = sh
 
         tmp_pifi.main(argv=['status'])
-        self.assertIn(mock.call(), s.mock_calls)
+        self.assertIn(mock.call([]), s.mock_calls)
         tmp_pifi.main(argv=['list', 'seen'])
-        self.assertIn(mock.call(), ls.mock_calls)
+        self.assertIn(mock.call(['seen']), lc.mock_calls)
         tmp_pifi.main(argv=['list', 'pending'])
-        self.assertIn(mock.call(), lp.mock_calls)
+        self.assertIn(mock.call(['pending']), lc.mock_calls)
 
     def test_args_cli_parse(self):
         del sys.modules['pifi.pifi']
@@ -180,14 +178,14 @@ class pifiCommandlineTests(unittest.TestCase):
         tmp_pifi.set_hostname = sh
 
         tmp_pifi.main(argv=['set-hostname', 'foo'])
-        self.assertIn(mock.call('foo'), sh.mock_calls)
+        self.assertIn(mock.call(['foo']), sh.mock_calls)
         tmp_pifi.main(argv=['set-hostname', 'bar'])
-        self.assertIn(mock.call('bar'), sh.mock_calls)
+        self.assertIn(mock.call(['bar']), sh.mock_calls)
 
         tmp_pifi.main(argv=['add', 'foo', 'bar'])
-        self.assertIn(mock.call('foo', 'bar'), a.mock_calls)
+        self.assertIn(mock.call(['foo', 'bar']), a.mock_calls)
         tmp_pifi.main(argv=['add', 'bar'])
-        self.assertIn(mock.call('bar', None), a.mock_calls)
+        self.assertIn(mock.call(['bar']), a.mock_calls)
 
 
 def main():
