@@ -55,7 +55,7 @@ To install from source, run `sudo pip3 install .` in the pifi directory after cl
 ## Dependencies
 Note: Don't worry about dependencies if you are installing from debs, they will be installed automatically.
 
-This package depends on python3-networkmanager, python3-docopt, python3-empy, and python3-yaml.
+This package depends on python3-networkmanager, python3-empy, and python3-yaml.
 
 python3-networkmanager is not availible in the standard ubuntu/debian repos, so you will have install it from `pip3 install python-networkmanager`, or use the debian package from https://packages.ubiquityrobotics.com/. More info [here](debian/build-dependencies.md)
 

@@ -9,7 +9,7 @@ setup(
     author_email="send2arohan@gmail.com",
     license="BSD",
     packages=find_packages(exclude=["test"]),
-    install_requires=["python-networkmanager", "docopt", "empy", "pyyaml", "evdev"],
+    install_requires=["python-networkmanager", "empy", "pyyaml", "evdev"],
     entry_points={
         "console_scripts": ["pifi_startup=pifi.startup:main", "pifi=pifi.pifi:main",],
     },

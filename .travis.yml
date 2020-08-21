@@ -11,8 +11,8 @@ addons:
 
 install:
   - pip3 install -r requirements.txt --no-deps
-  - pip3 install coveralls 
   - pip3 install black 
+  - pip install coveralls 
 
 script: 
   - coverage run --source pifi setup.py test

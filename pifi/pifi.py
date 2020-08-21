@@ -17,21 +17,18 @@ Options:
   -y           Bypass any prompting
 
 """
-from docopt import docopt
+import argparse
+import time
+import uuid
+import sys
+import socket
 
 import NetworkManager
-import json
-import time
-import os, sys, socket, subprocess
 
 import pifi.nm_helper as nm
 import pifi.var_io as var_io
 import pifi.etc_io as etc_io
 import pifi.startup as startup
-
-import uuid
-
-skip_prompt = False
 
 
 def query_yes_no(question, default="no"):
@@ -44,10 +41,6 @@ def query_yes_no(question, default="no"):
 
     The "answer" return value is True for "yes" or False for "no".
     """
-    global skip_prompt
-    if skip_prompt == True:
-        return True
-
     valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
     if default is None:
         prompt = " [y/n] "
@@ -69,7 +62,7 @@ def query_yes_no(question, default="no"):
             sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
 
 
-def status(nm=nm):
+def status(argv, nm=nm):
     devices = 0
 
     for ApModeDevice in nm.managedAPCapableDevices():
@@ -94,7 +87,17 @@ def status(nm=nm):
         exit(2)
 
 
-def add(ssid, password, var_io=var_io):
+def add(argv, var_io=var_io):
+    parser = argparse.ArgumentParser(
+        description="Add a network to connect to on the next reboot/rescan"
+    )
+    parser.add_argument("ssid")
+    parser.add_argument("password", nargs="?")
+    args = parser.parse_args(argv)
+
+    ssid = args.ssid
+    password = args.password
+
     if etc_io.get_hostname() == "ubiquityrobot":
         print(
             "WARN: Please use `pifi set-hostname` to change the hostname before connecting"
@@ -147,7 +150,17 @@ def add(ssid, password, var_io=var_io):
         )
 
 
-def remove(ssid):
+def remove(argv):
+    parser = argparse.ArgumentParser(
+        description="Remove a network from both pending and current connections"
+    )
+    parser.add_argument("ssid")
+    parser.add_argument("-y", action="store_true")
+    args = parser.parse_args(argv)
+
+    ssid = args.ssid
+    skip_prompt = args.y
+
     for device in nm.managedWifiDevices():
         if device.State == NetworkManager.NM_DEVICE_STATE_ACTIVATED:
             current_connection = device.GetAppliedConnection(0)
@@ -157,7 +170,9 @@ def remove(ssid):
             ).decode("utf-8"):
                 print("WARN: Connection is currently active")
                 print("WARN: Deleting can disrupt existing SSH connetions")
-                if query_yes_no("Continue Deletion?") == False:
+
+                # If skip_prompt is true, short circuit the if, otherwise go into the query
+                if not skip_prompt and not query_yes_no("Continue Removal?"):
                     return
 
     pending = var_io.readPendingConnections()
@@ -180,23 +195,33 @@ def remove(ssid):
             con.Delete()
 
 
-def list_seen():
-    for ssid in var_io.readSeenSSIDs():
-        print(ssid)
+def list_command(argv):
+    list_parser = argparse.ArgumentParser(
+        description="List either seen or pending connections"
+    )
+    list_parser.add_argument("list")
+    args = list_parser.parse_args(argv)
+
+    if args.list == "seen":
+        for ssid in var_io.readSeenSSIDs():
+            print(ssid)
+    if args.list == "pending":
+        for con in var_io.readPendingConnections():
+            try:
+                print(con["802-11-wireless"]["ssid"])
+            except KeyError:
+                print(
+                    "WARN: Found non wireless pending connection: %s"
+                    % con["connection"]["id"]
+                )
 
 
-def list_pending():
-    for con in var_io.readPendingConnections():
-        try:
-            print(con["802-11-wireless"]["ssid"])
-        except KeyError:
-            print(
-                "WARN: Found non wireless pending connection: %s"
-                % con["connection"]["id"]
-            )
+def set_hostname(argv):
+    parser = argparse.ArgumentParser(description="Set a new hostname")
+    parser.add_argument("hostname")
+    args = parser.parse_args(argv)
+    new_hostname = args.hostname
 
-
-def set_hostname(new_hostname):
     old_hostname = etc_io.get_hostname()
     print("Changing hostname from %s to %s" % (old_hostname, new_hostname))
 
@@ -213,7 +238,15 @@ def set_hostname(new_hostname):
         )
 
 
-def rescan():
+def rescan(argv):
+    parser = argparse.ArgumentParser(
+        description="Stop AP mode and rescan for known networks, start AP mode again if none found"
+    )
+    parser.add_argument("-y", action="store_true")
+    args = parser.parse_args(argv)
+
+    skip_prompt = args.y
+
     pifi_conf_settings = etc_io.get_conf()
     ApModeDevice, ClientModeDevice = nm.select_devices(pifi_conf_settings)
 
@@ -229,7 +262,9 @@ def rescan():
                 "Device is currently acting as an Access Point, Rescanning requires turning this off"
             )
             print("This will disrupt any SSH connections")
-            if query_yes_no("Continue?") == False:
+
+            # If skip_prompt is true, short circuit the if, otherwise go into the query
+            if not skip_prompt and not query_yes_no("Continue?"):
                 return
             ApModeDevice.Disconnect()
 
@@ -274,28 +309,18 @@ def rescan():
 
 
 def main(argv=sys.argv[1:]):
-    arguments = docopt(__doc__, argv=argv, version="pifi version 0.9.0")
+    parser = argparse.ArgumentParser(usage=__doc__)
+    parser.add_argument("command", help="Subcommand to run")
+    args = parser.parse_args(argv[:1])
 
-    global skip_prompt
-    if "-y" in arguments:
-        if arguments["-y"]:
-            skip_prompt = True
+    commands = {
+        "status": status,
+        "add": add,
+        "remove": remove,
+        "set-hostname": set_hostname,
+        "rescan": rescan,
+        "list": list_command,
+    }
 
-    if arguments["status"]:
-        status()
-    if arguments["add"]:
-        if "<password>" is not None:
-            add(arguments["<ssid>"], arguments["<password>"])
-        else:
-            add(arguments["<ssid>"], None)
-    if arguments["remove"]:
-        if "<password>" is not None:
-            remove(arguments["<ssid>"])
-    if arguments["list"] and arguments["seen"]:
-        list_seen()
-    if arguments["list"] and arguments["pending"]:
-        list_pending()
-    if arguments["set-hostname"]:
-        set_hostname(arguments["<hostname>"])
-    if arguments["rescan"]:
-        rescan()
+    if args.command in commands:
+        commands[args.command](argv[1:])
