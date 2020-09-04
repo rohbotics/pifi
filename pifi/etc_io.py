@@ -10,8 +10,7 @@ conf_path = "/etc/pifi/pifi.conf"
 hostname_path = "/etc/hostname"
 hosts_path = "/etc/hosts"
 
-# default_ap_path = "../default_ap.em"
-# conf_path = "../pifi.conf"
+crda_path = "/etc/default/crda"
 
 import os, sys
 import em
@@ -146,3 +145,21 @@ def set_hostname(old_hostname, new_hostname, open=open):
 
     with open(hosts_path, "w") as hosts_file:
         hosts_file.writelines(hosts_lines)
+
+
+def change_regdomain(line, country_code):
+    if line.startswith("REGDOMAIN"):
+        return "REGDOMAIN={}".format(country_code)
+    else:
+        return line
+
+
+def set_country(country_code, open=open):
+    crda_lines = []
+    with open(crda_path, "r") as crda_file:
+        crda_lines = crda_file.readlines()
+
+    crda_lines = [change_regdomain(line, country_code) for line in crda_lines]
+
+    with open(crda_path, "w") as crda_file:
+        crda_file.writelines(crda_lines)
