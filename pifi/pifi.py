@@ -308,6 +308,19 @@ def rescan(argv):
     startup.start_ap_mode(pifi_conf_settings, ApModeDevice, ClientModeDevice)
 
 
+def set_country(argv):
+    parser = argparse.ArgumentParser(description="Set your country ")
+    parser.add_argument("ISO_country_code")
+    args = parser.parse_args(argv)
+
+    try:
+        etc_io.set_country(args.ISO_country_code)
+    except PermissionError:
+        print("Error writing to /etc/default/crda, make sure you are running with sudo")
+    except OSError:
+        print("Error writing to /etc/default/crda, make sure you are running with sudo")
+
+
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument("command", help="Subcommand to run")
@@ -318,6 +331,7 @@ def main(argv=sys.argv[1:]):
         "add": add,
         "remove": remove,
         "set-hostname": set_hostname,
+        "set-country": set_country,
         "rescan": rescan,
         "list": list_command,
     }
