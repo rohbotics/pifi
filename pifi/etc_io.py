@@ -76,14 +76,14 @@ def get_default_ap_conf(mac, open=open):
                         ap_config["connection"]["autoconnect"] = True
                     else:
                         ap_config["connection"]["autoconnect"] = False
-                        
-            if "802-11-wireless" in ap_config: 
-                if "channel" in ap_config["802-11-wireless"]:   
+
+            if "802-11-wireless" in ap_config:
+                if "channel" in ap_config["802-11-wireless"]:
                     tmp = int(ap_config["802-11-wireless"]["channel"])
                     del ap_config["802-11-wireless"]["channel"]
                     # The networkmanager demands the value as uint32, hopefully this'll do
                     ap_config["802-11-wireless"]["channel"] = ctypes.c_uint32(tmp).value
-                        
+
             return ap_config
     except FileNotFoundError:
         print(
