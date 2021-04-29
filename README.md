@@ -1,7 +1,7 @@
 # pifi
 A headless wifi provisioning system, primarily designed for robots with Raspberry Pi's.
 
-[![Build Status](https://travis-ci.org/rohbotics/pifi.svg?branch=master)](https://travis-ci.org/rohbotics/pifi)
+![Build Status](https://github.com/rohbotics/pifi/actions/workflows/xenial.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/rohbotics/pifi/badge.svg?branch=master)](https://coveralls.io/github/rohbotics/pifi?branch=master)
 
 Pifi uses NetworkManager to do the heavy lifting under the hood.
