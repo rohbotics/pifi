@@ -29,6 +29,7 @@ import pifi.nm_helper as nm
 import pifi.var_io as var_io
 import pifi.etc_io as etc_io
 import pifi.startup as startup
+from pifi.version import __version__
 
 
 def query_yes_no(question, default="no"):
@@ -324,6 +325,12 @@ def set_country(argv):
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument("command", help="Subcommand to run")
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="%(prog)s {version}".format(version=__version__),
+    )
     args = parser.parse_args(argv[:1])
 
     commands = {
