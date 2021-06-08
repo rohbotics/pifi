@@ -7,6 +7,49 @@ It wraps python-networkmanager.
 
 import NetworkManager
 
+# This *very ugly hack* works around https://github.com/rohbotics/pifi/issues/30
+# The version of python3-networkmanager in Ubuntu 20.04 craps out with unknown device types
+# including Wifi-P2P which the DBus API reports on the Raspberry Pi. This monkey patch
+# detects if that bug exists, and replaces the function with a version that returns a Generic
+# device type instead of crapping out.
+try:
+    NetworkManager.device_class(30)
+except KeyError:
+
+    def monkey_patched_device_class(typ):
+        return {
+            NetworkManager.NM_DEVICE_TYPE_ADSL: NetworkManager.Adsl,
+            NetworkManager.NM_DEVICE_TYPE_BOND: NetworkManager.Bond,
+            NetworkManager.NM_DEVICE_TYPE_BRIDGE: NetworkManager.Bridge,
+            NetworkManager.NM_DEVICE_TYPE_BT: NetworkManager.Bluetooth,
+            NetworkManager.NM_DEVICE_TYPE_ETHERNET: NetworkManager.Wired,
+            NetworkManager.NM_DEVICE_TYPE_GENERIC: NetworkManager.Generic,
+            NetworkManager.NM_DEVICE_TYPE_INFINIBAND: NetworkManager.Infiniband,
+            NetworkManager.NM_DEVICE_TYPE_IP_TUNNEL: NetworkManager.IPTunnel,
+            NetworkManager.NM_DEVICE_TYPE_MACVLAN: NetworkManager.Macvlan,
+            NetworkManager.NM_DEVICE_TYPE_MODEM: NetworkManager.Modem,
+            NetworkManager.NM_DEVICE_TYPE_OLPC_MESH: NetworkManager.OlpcMesh,
+            NetworkManager.NM_DEVICE_TYPE_TEAM: NetworkManager.Team,
+            NetworkManager.NM_DEVICE_TYPE_TUN: NetworkManager.Tun,
+            NetworkManager.NM_DEVICE_TYPE_VETH: NetworkManager.Veth,
+            NetworkManager.NM_DEVICE_TYPE_VLAN: NetworkManager.Vlan,
+            NetworkManager.NM_DEVICE_TYPE_VXLAN: NetworkManager.Vxlan,
+            NetworkManager.NM_DEVICE_TYPE_WIFI: NetworkManager.Wireless,
+            NetworkManager.NM_DEVICE_TYPE_WIMAX: NetworkManager.Wimax,
+            NetworkManager.NM_DEVICE_TYPE_MACSEC: NetworkManager.MacSec,
+            NetworkManager.NM_DEVICE_TYPE_DUMMY: NetworkManager.Dummy,
+            NetworkManager.NM_DEVICE_TYPE_PPP: NetworkManager.PPP,
+            NetworkManager.NM_DEVICE_TYPE_OVS_INTERFACE: NetworkManager.OvsIf,
+            NetworkManager.NM_DEVICE_TYPE_OVS_PORT: NetworkManager.OvsPort,
+            NetworkManager.NM_DEVICE_TYPE_OVS_BRIDGE: NetworkManager.OvsBridge,
+        }.get(typ, NetworkManager.Generic)
+
+    NetworkManager.device_class = monkey_patched_device_class
+except:
+    # If there are any other errors (like attribute error for the function not existing)
+    # we just continue silently.
+    pass
+
 
 def checkCapablities(device_capabilities, capability):
     return device_capabilities & capability == capability
