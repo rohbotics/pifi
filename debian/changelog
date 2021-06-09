@@ -1,21 +1,29 @@
-pifi (0.9.0) UNRELEASED; urgency=medium
+pifi (0.10.0) xenial; urgency=medium
+
+  * Support for setting country code through pifi
+  * Fix type errors with specifying a channel in AP mode
+  * Add monkeypatches needed on Ubuntu 20.04
+
+ -- Rohan Agrawal <send2arohan@gmail.com>  Wed, 09 Jun 2021 20:05:53 -0700
+
+pifi (0.9.0) xenial; urgency=medium
 
   * Multiple LED blink patterns for different states
   * Print message when connection added to elimiate warning confusion
 
- -- Rohan Agrawal <rohan@gridlock>  Sun, 12 Apr 2020 20:05:53 -0700
+ -- Rohan Agrawal <send2arohan@gmail.com>  Sun, 12 Apr 2020 20:05:53 -0700
 
 pifi (0.8.0) xenial; urgency=medium
 
   * Add rescan and -y features 
 
- -- Rohan Agrawal <rohan@gridlock>  Sat, 04 Apr 2020 16:17:06 -0700
+ -- Rohan Agrawal <send2arohan@gmail.com>  Sat, 04 Apr 2020 16:17:06 -0700
 
 pifi (0.7.1) xenial; urgency=medium
 
   * Fixed pifi list seen 
 
- -- Rohan Agrawal <rohan@gridlock>  Sat, 04 Apr 2020 11:44:49 -0700
+ -- Rohan Agrawal <send2arohan@gmail.com>  Sat, 04 Apr 2020 11:44:49 -0700
 
 pifi (0.7.0) xenial; urgency=medium
 
