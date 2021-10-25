@@ -77,7 +77,9 @@ def status(argv, nm=nm):
             "mode" in current_connection[0]["802-11-wireless"]
             and current_connection[0]["802-11-wireless"]["mode"] == "ap"
         ):
-            print("Device is currently acting as an Access Point")
+            ssid = current_connection[0]["802-11-wireless"]["ssid"]
+            ssid = bytearray([ord(byte) for byte in ssid])
+            print("Device is currently acting as an Access Point with ssid %s" % ssid.decode("utf-8"))
         else:
             ssid = current_connection[0]["802-11-wireless"]["ssid"]
             ssid = bytearray([ord(byte) for byte in ssid])
@@ -123,7 +125,7 @@ def add(argv, var_io=var_io):
                 "key-mgmt": "wpa-psk",  # We only support WPA2-PSK networks for now
                 "psk": password,
             },
-            "ipv4": {"method": "auto"},
+            "ipv4": {"method": "auto", "dns": ["8.8.8.8", "8.8.4.4"]},
             "ipv6": {"method": "auto"},
         }
 
@@ -136,7 +138,7 @@ def add(argv, var_io=var_io):
                 "uuid": str(uuid.uuid4()),
             },
             "802-11-wireless": {"mode": "infrastructure", "ssid": ssid},
-            "ipv4": {"method": "auto"},
+            "ipv4": {"method": "auto", "dns": ["8.8.8.8", "8.8.4.4"]},
             "ipv6": {"method": "auto"},
         }
 
@@ -192,9 +194,12 @@ def remove(argv):
     for con in nm.existingConnections():
         settings = con.GetSettings()
         if ssid == settings["802-11-wireless"]["ssid"]:
-            pass
+            print("Severing SSH connection and activating rescan")
+            print("Will connect to any available pending connections")
+            print("If there are no pending connections, will reestablish AP mode")
+            print("You can close this terminal")
             con.Delete()
-
+            rescan()
 
 def list_command(argv):
     list_parser = argparse.ArgumentParser(
