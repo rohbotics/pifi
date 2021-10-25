@@ -77,7 +77,9 @@ def status(argv, nm=nm):
             "mode" in current_connection[0]["802-11-wireless"]
             and current_connection[0]["802-11-wireless"]["mode"] == "ap"
         ):
-            print("Device is currently acting as an Access Point")
+            ssid = current_connection[0]['802-11-wireless']['ssid']
+            ssid = bytearray([ord(byte) for byte in ssid])
+            print("Device is currently acting as an Access Point with ssid %s" % ssid.decode("utf-8"))
         else:
             ssid = current_connection[0]["802-11-wireless"]["ssid"]
             ssid = bytearray([ord(byte) for byte in ssid])
