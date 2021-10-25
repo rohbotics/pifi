@@ -123,7 +123,7 @@ def add(argv, var_io=var_io):
                 "key-mgmt": "wpa-psk",  # We only support WPA2-PSK networks for now
                 "psk": password,
             },
-            "ipv4": {"method": "auto"},
+            "ipv4": {"method": "auto", 'dns': ['8.8.8.8', '8.8.4.4']},
             "ipv6": {"method": "auto"},
         }
 
@@ -136,7 +136,7 @@ def add(argv, var_io=var_io):
                 "uuid": str(uuid.uuid4()),
             },
             "802-11-wireless": {"mode": "infrastructure", "ssid": ssid},
-            "ipv4": {"method": "auto"},
+            "ipv4": {"method": "auto", 'dns': ['8.8.8.8', '8.8.4.4']},
             "ipv6": {"method": "auto"},
         }
 
