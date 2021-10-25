@@ -193,10 +193,13 @@ def remove(argv):
 
     for con in nm.existingConnections():
         settings = con.GetSettings()
-        if ssid == settings["802-11-wireless"]["ssid"]:
-            pass
+        if ssid == settings['802-11-wireless']['ssid']:
+            print("Severing SSH connection and activating rescan")
+            print("Will connect to any available pending connections")
+            print("If there are no pending connections, will reestablish AP mode")
+            print("You can close this terminal")
             con.Delete()
-
+            rescan()
 
 def list_command(argv):
     list_parser = argparse.ArgumentParser(
