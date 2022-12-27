@@ -1,6 +1,6 @@
 python-networkmanager==2.0.1
 six==1.10.0
-setuptools==34.3.1
+setuptools==65.5.1
 evdev==0.7.0
 empy==3.3.2
 PyYAML==3.13
